@@ -1,0 +1,24 @@
+#topbar {
+  height: 5vh;
+  padding: 0 25px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#topbar .hello-user {
+  display: flex;
+  align-items: center;
+}
+
+#topbar .hello-user svg {
+  margin-left: 10px;
+}
+
+#topbar .hello-user form {
+  display: inline;
+}
+#topbar .hello-user form button {
+  margin-left: 15px;
+}
