@@ -6,6 +6,7 @@ body {
 }
 
 main {
+  height: 90%;
   margin-left: 5rem;
   padding: 1rem;
 }

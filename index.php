@@ -1,5 +1,5 @@
 <?php
-// login system
+/* LOGIN SYSTEM */
 if (isset($_POST['submit'])) {
   session_start();
   include 'config/connection.php';
@@ -47,31 +47,71 @@ if (isset($_POST['submit'])) {
 
   mysqli_close($conn);
 }
-?>
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<?php include 'templates/head.php'; ?>
-<link rel="stylesheet" href="styles/main.css">
-<link rel="stylesheet" href="styles/pages/index.css">
-</head>
-<body class="d-flex flex-column justify-content-center align-items-center">
-  <main class="bg-light border rounded m-0">
-    <div id="top" class="text-center">
-      <img src="assets/shopping.svg" alt="logo" width="80px" height="80px">
-      <h1>Sistema de vendas</h1>
-    </div>
-    <form action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
-      <label for="login">Insira seu login</label>
-      <input type="text" name="login" id="login" class="form-control" placeholder="Login" required>
-      <label for="password">Insira sua senha</label>
-      <input type="password" name="password" id="password" class="form-control" placeholder="Senha" required>
-      <button type="submit" name="submit" class="btn btn-success w-50 mx-auto">Entrar</button>
-    </form>
-  </main>
-  <footer class="text-center fixed-bottom">
-    <p>&copy; Sistema de vendas 2020 | Criado por <a href="https://github.com/yunger7" target="_blank">Luís Galete Faldão</a></p>
-  </footer>
-</body>
-</html>
+/* CADASTRAR SENHA */
+if (isset($_GET['registrar'])) { ?>
+  <!DOCTYPE html>
+  <html lang="pt-br">
+
+  <head>
+    <?php include 'templates/head.php'; ?>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/pages/index.css">
+  </head>
+
+  <body class="d-flex flex-column justify-content-center align-items-center">
+    <main class="bg-light border rounded m-0">
+      <div id="top" class="text-center">
+        <img src="assets/shopping.svg" alt="logo" width="80px" height="80px">
+        <h1>Sistema de vendas</h1>
+        <div id="info">
+          <p>Contate um vendedor ou administrador para cadastrar seu dados.</p>
+          <p>Caso já tenha feito isso, registre sua senha para fazer o login.</p>
+        </div>
+      </div>
+      <form id="registrar-senha" action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
+        <label for="password">Insira sua senha</label>
+        <input type="password" name="password" id="password" class="form-control" placeholder="Senha" required>
+        <button type="submit" name="submit" class="btn btn-success w-50 mx-auto">Entrar</button>
+        <a href="index.php">Voltar</a>
+      </form>
+    </main>
+    <footer class="text-center fixed-bottom">
+      <p>&copy; Sistema de vendas 2020 | Criado por <a href="https://github.com/yunger7" target="_blank">Luís Galete Faldão</a></p>
+    </footer>
+  </body>
+
+  </html>
+
+<?php } else { /* INDEX DEFAULT */ ?>
+  <!DOCTYPE html>
+  <html lang="pt-br">
+
+  <head>
+    <?php include 'templates/head.php'; ?>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/pages/index.css">
+  </head>
+
+  <body class="d-flex flex-column justify-content-center align-items-center">
+    <main class="bg-light border rounded m-0">
+      <div id="top" class="text-center">
+        <img src="assets/shopping.svg" alt="logo" width="80px" height="80px">
+        <h1>Sistema de vendas</h1>
+      </div>
+      <form action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
+        <label for="login">Insira seu login</label>
+        <input type="text" name="login" id="login" class="form-control" placeholder="Login" required>
+        <label for="password">Insira sua senha</label>
+        <input type="password" name="password" id="password" class="form-control" placeholder="Senha" required>
+        <button type="submit" name="submit" class="btn btn-success w-50 mx-auto">Entrar</button>
+        <a href="index.php?registrar">Registrar-se</a>
+      </form>
+    </main>
+    <footer class="text-center fixed-bottom">
+      <p>&copy; Sistema de vendas 2020 | Criado por <a href="https://github.com/yunger7" target="_blank">Luís Galete Faldão</a></p>
+    </footer>
+  </body>
+
+  </html>
+<?php } ?>

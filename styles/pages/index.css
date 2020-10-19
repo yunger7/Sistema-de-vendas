@@ -4,17 +4,26 @@ main {
   padding: 10px;
 }
 
-#top img {
-  position: relative;
-  bottom: 40px;
-}
-
 h1 {
   position: relative;
   bottom: 30px;
 }
 
+p {
+  text-align: left;
+}
+
+#top img {
+  position: relative;
+  bottom: 40px;
+}
+
+#top #info {
+  padding: 0 1.5rem;
+}
+
 form {
+  height: 80%;
   padding: 40px;
   display: flex;
   flex-direction: column;
@@ -28,6 +37,25 @@ form input {
   margin-bottom: 15px;
 }
 
+form a {
+  max-width: 250px;
+  margin: 45% auto 0 auto;
+}
+
 button[type='submit'] {
   margin-top: 10%;
+}
+
+form#registrar-senha {
+  height: 40%;
+  padding: 1rem;
+}
+
+form#registrar-senha a {
+  max-width: 250px;
+  margin: 30% auto 0 auto;
+}
+
+footer p {
+  text-align: center;
 }
