@@ -15,7 +15,7 @@ p {
 
 #top img {
   position: relative;
-  bottom: 40px;
+  bottom: 50px;
 }
 
 #top #info {
@@ -37,25 +37,49 @@ form input {
   margin-bottom: 15px;
 }
 
+/* Remove input number arrows */
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+form input[type='number'] {
+  -moz-appearance: textfield;
+}
+
 form a {
   max-width: 250px;
-  margin: 45% auto 0 auto;
+  margin: 4% auto 0 auto;
 }
 
 button[type='submit'] {
   margin-top: 10%;
 }
 
-form#registrar-senha {
+footer p {
+  text-align: center;
+}
+
+/* Style for register page */
+
+#register form#registrar-senha {
   height: 40%;
   padding: 1rem;
 }
 
-form#registrar-senha a {
+#register form#registrar-senha a {
   max-width: 250px;
-  margin: 30% auto 0 auto;
+  margin: 4% auto 0 auto;
 }
 
-footer p {
-  text-align: center;
+#register h1 {
+  margin-bottom: -5px;
+}
+
+#register #top {
+  margin-bottom: -10px;
+}
+
+#register button[type='submit'] {
+  margin-top: 4%;
 }

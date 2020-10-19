@@ -47,7 +47,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 }
 
 form input[type='number'] {
-  -moz-appearance: textfield
+  -moz-appearance: textfield;
 }
 
 button[type='submit'] {

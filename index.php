@@ -1,11 +1,11 @@
 <?php
 /* LOGIN SYSTEM */
-if (isset($_POST['submit'])) {
+if (isset($_POST['submit-login'])) {
   session_start();
   include 'config/connection.php';
 
   $login = $_POST['login'];
-  $password = $_POST['password'];
+  $password = base64_encode($_POST['password']);
 
   $checkDB = mysqli_query($conn, "SELECT * FROM pessoas WHERE nome = '$login' AND senha = '$password'");
 
@@ -20,7 +20,7 @@ if (isset($_POST['submit'])) {
     $vendedor = mysqli_query($conn, "SELECT * FROM vendedores WHERE fk_idpessoa = '$userId'");
     $cliente = mysqli_query($conn, "SELECT * FROM clientes WHERE fk_idpessoa = '$userId'");
 
-    if ($user['nome'] === "admin" and $user['senha'] === "admin") {
+    if ($user['nome'] === "admin" and $user['senha'] === "YWRtaW4=") {
       $_SESSION['type'] = "admin";
       $_SESSION['priority'] = 2;
     } else if (mysqli_num_rows($vendedor) > 0) {
@@ -47,8 +47,49 @@ if (isset($_POST['submit'])) {
 
   mysqli_close($conn);
 }
+/* REGISTER PASSWORD */
+if (isset($_POST['submit-password'])) {
+  $cpf = $_POST['cpf'];
+  $password = base64_encode($_POST['password']);
 
-/* CADASTRAR SENHA */
+  // check if user exists in database
+  include 'config/connection.php';
+  $cliente = mysqli_query($conn, "SELECT * FROM pessoas WHERE cpf = '$cpf'");
+
+  if (mysqli_num_rows($cliente) > 0) {
+    // user exists
+    mysqli_free_result($cliente);
+
+    $sql = "UPDATE pessoas SET senha = '$password' WHERE cpf = '$cpf'";
+
+    if (mysqli_query($conn, $sql)) {
+      echo "
+        <script language='javascript' type='text/javascript'>
+          alert('Senha cadastrada com sucesso');
+          location.href = 'index.php';
+        </script>
+      ";
+    } else {
+      echo "
+        <script language='javascript' type='text/javascript'>
+          alert('Houve um problema ao cadastrar a senha');
+        </script>
+      ";
+    }
+  } else {
+    echo "
+      <script language='javascript' type='text/javascript'>
+        alert('Não existe um usuário com esse CPF');
+      </script>
+    ";
+  }
+
+  mysqli_free_result($cliente);
+  mysqli_close($conn);
+}
+
+/* SEND PAGES */
+// register page
 if (isset($_GET['registrar'])) { ?>
   <!DOCTYPE html>
   <html lang="pt-br">
@@ -59,7 +100,7 @@ if (isset($_GET['registrar'])) { ?>
     <link rel="stylesheet" href="styles/pages/index.css">
   </head>
 
-  <body class="d-flex flex-column justify-content-center align-items-center">
+  <body id="register" class="d-flex flex-column justify-content-center align-items-center">
     <main class="bg-light border rounded m-0">
       <div id="top" class="text-center">
         <img src="assets/shopping.svg" alt="logo" width="80px" height="80px">
@@ -70,9 +111,11 @@ if (isset($_GET['registrar'])) { ?>
         </div>
       </div>
       <form id="registrar-senha" action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
+        <label for="cpf">Insira seu CPF</label>
+        <input type="number" name="cpf" id="cpf" class="form-control" placeholder="CPF" required>
         <label for="password">Insira sua senha</label>
         <input type="password" name="password" id="password" class="form-control" placeholder="Senha" required>
-        <button type="submit" name="submit" class="btn btn-success w-50 mx-auto">Entrar</button>
+        <button type="submit" name="submit-password" class="btn btn-success w-50 mx-auto">Registrar senha</button>
         <a href="index.php">Voltar</a>
       </form>
     </main>
@@ -104,7 +147,7 @@ if (isset($_GET['registrar'])) { ?>
         <input type="text" name="login" id="login" class="form-control" placeholder="Login" required>
         <label for="password">Insira sua senha</label>
         <input type="password" name="password" id="password" class="form-control" placeholder="Senha" required>
-        <button type="submit" name="submit" class="btn btn-success w-50 mx-auto">Entrar</button>
+        <button type="submit" name="submit-login" class="btn btn-success w-50 mx-auto">Entrar</button>
         <a href="index.php?registrar">Registrar-se</a>
       </form>
     </main>

@@ -6,7 +6,7 @@ if ($_SESSION['status'] !== "logged") {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
   <?php include 'templates/head.php'; ?>
