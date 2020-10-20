@@ -12,11 +12,12 @@ if (isset($_POST['submit-login'])) {
   if (mysqli_num_rows($checkDB) > 0) {
     // user exists in database
     $user = mysqli_fetch_array($checkDB);
+    $userId = $user['idpessoa'];
 
     $_SESSION['user'] = $user['nome'];
     $_SESSION['status'] = "logged";
+    $_SESSION['user-id'] = $userId;
 
-    $userId = $user['idpessoa'];
     $vendedor = mysqli_query($conn, "SELECT * FROM vendedores WHERE fk_idpessoa = '$userId'");
     $cliente = mysqli_query($conn, "SELECT * FROM clientes WHERE fk_idpessoa = '$userId'");
 
@@ -88,8 +89,7 @@ if (isset($_POST['submit-password'])) {
 }
 
 /* SEND PAGES */
-// register page
-if (isset($_GET['registrar'])) { ?>
+if (isset($_GET['registrar'])) { /* Register page */ ?>
   <!DOCTYPE html>
   <html lang="pt-br">
 
@@ -125,7 +125,7 @@ if (isset($_GET['registrar'])) { ?>
 
   </html>
 
-<?php } else { /* INDEX DEFAULT */ ?>
+<?php } else { /* Index default */ ?>
   <!DOCTYPE html>
   <html lang="pt-br">
 

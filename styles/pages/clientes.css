@@ -75,6 +75,10 @@ button[type='submit'] {
   align-items: center;
 }
 
+.search form button[type='submit'] {
+  margin: 0 !important;
+}
+
 .search form .container .row {
   margin: 0.8rem 0;
 }
@@ -94,3 +98,29 @@ button[type='submit'] {
 .search .container {
   padding: 2rem 0;
 }
+
+/* SEARCH PAGE */
+main.search-results {
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* EDIT PAGE */
+.edit-page .users {
+  height: 100%;
+  width: 40%;
+}
+
+.edit-page form p {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.edit-page form .option {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
