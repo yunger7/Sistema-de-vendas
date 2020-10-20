@@ -106,6 +106,59 @@ if (isset($_POST['submit-edit-seller'])) {
   mysqli_close($conn);
 }
 
+/* DELETE SELLER */
+if (isset($_GET['delete-seller'])) {
+  include 'config/connection.php';
+
+  $idExcluir = $_GET['id'];
+
+  $res = mysqli_query($conn, "SELECT * FROM pessoas JOIN vendedores ON pessoas.idpessoa = vendedores.fk_idpessoa WHERE idpessoa = '$idExcluir'");
+  $seller = mysqli_fetch_assoc($res);
+  mysqli_free_result($res);
+
+  // Dados do vendedor
+  $idPessoa = $seller['idpessoa'];
+  $nome = $seller['nome'];
+  $cpf = $seller['cpf'];
+  $status = $seller['status'];
+  $senha = $seller['senha'];
+  $idVendedor = $seller['idvendedor'];
+  $salario = $seller['salario'];
+
+  // Dados do usuário
+  $idUsuario = $_SESSION['user-id'];
+
+  // Mover para lixeira e excluir dados
+  $sql = "INSERT INTO lixeira (idpessoa, nome, cpf, status, senha, idvendedor, salario, idusuario) VALUES ('$idPessoa', '$nome', '$cpf', '$status', '$senha', '$idVendedor', '$salario', '$idUsuario')";
+
+  if (mysqli_query($conn, $sql)) {
+    if (mysqli_query($conn, "DELETE FROM pessoas WHERE idpessoa = '$idExcluir'")) {
+      echo "
+        <script language='javascript' type='text/javascript'>
+          alert('Cliente excluído com sucesso!');
+          window.location.href = 'clientes.php';
+        </script>
+      ";
+    } else {
+      echo "
+        <script language='javascript' type='text/javascript'>
+          alert('Houve um problema ao excluir o cliente');
+          window.location.href = 'clientes.php';
+        </script>
+      ";
+    }
+  } else {
+    echo "
+      <script language='javascript' type='text/javascript'>
+        alert('Houve um problema ao excluir o cliente');
+        window.location.href = 'clientes.php';
+      </script>
+    ";
+  }
+
+  mysqli_close($conn);
+}
+
 /* SEND PAGES */
 if (isset($_GET['name']) || isset($_GET['letter'])) { /* Search page */ ?>
   <?php
