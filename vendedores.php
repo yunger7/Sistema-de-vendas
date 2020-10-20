@@ -65,6 +65,47 @@ if (isset($_POST['submit-vendedor'])) {
   mysqli_close($conn);
 }
 
+/* EDIT SELLER */
+if (isset($_POST['submit-edit-seller'])) {
+  include 'config/connection.php';
+
+  $idEditar = $_POST['id-editar'];
+  $nome = $_POST['nome'];
+  $cpf = $_POST['cpf'];
+  $salario = $_POST['salario'];
+  $senha = base64_encode($_POST['senha']);
+
+  $sql = "UPDATE pessoas SET nome = '$nome', cpf = '$cpf', senha = '$senha' WHERE idpessoa = '$idEditar'";
+  $sql2 = "UPDATE vendedores SET salario = '$salario' WHERE fk_idpessoa = '$idEditar'";
+
+  if (mysqli_query($conn, $sql)) {
+    if (mysqli_query($conn, $sql2)) {
+      echo "
+        <script language='javascript' type='text/javascript'>
+          alert('Vendedor editado com sucesso!');
+          window.location.href = 'vendedores.php';
+        </script>
+      ";
+    } else {
+      echo "
+        <script language='javascript' type='text/javascript'>
+          alert('Houve um problema ao editar o vendedor!');
+          window.location.href = 'vendedores.php';
+        </script>
+      ";
+    }
+  } else {
+    echo "
+      <script language='javascript' type='text/javascript'>
+        alert('Houve um problema ao editar o vendedor!');
+        window.location.href = 'vendedores.php';
+      </script>
+    ";
+  }
+
+  mysqli_close($conn);
+}
+
 /* SEND PAGES */
 if (isset($_GET['name']) || isset($_GET['letter'])) { /* Search page */ ?>
   <?php
@@ -158,6 +199,63 @@ if (isset($_GET['name']) || isset($_GET['letter'])) { /* Search page */ ?>
         </table>
       <?php } ?>
 
+    </main>
+  </body>
+
+  </html>
+<?php } else if (isset($_GET['edit-seller'])) { /* Edit page */ ?>
+  <?php
+  include 'config/connection.php';
+
+  $idEditar = $_GET['id'];
+
+  $res = mysqli_query($conn, "SELECT * FROM vendedores JOIN pessoas ON pessoas.idpessoa = vendedores.fk_idpessoa WHERE idpessoa = '$idEditar'");
+  $seller = mysqli_fetch_assoc($res);
+
+  mysqli_free_result($res);
+  mysqli_close($conn);
+  ?>
+  <!DOCTYPE html>
+  <html lang="pt-br">
+
+  <head>
+    <?php include 'templates/head.php'; ?>
+    <link rel="stylesheet" href="styles/pages/vendedores.css">
+  </head>
+
+  <body>
+    <?php include 'templates/navbar.php'; ?>
+    <?php include 'templates/topbar.php'; ?>
+    <main class="edit-page">
+      <section class="sellers bg-light border rounded">
+        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user-circle" class="svg-inline--fa fa-user-circle fa-w-16 top-img" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512">
+          <path fill="#4B5C6B" d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"></path>
+        </svg>
+        <h2>Editar dados do vendedor</h2>
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+          <label for="nome">Nome</label>
+          <input type="text" name="nome" id="nome" class="form-control" placeholder="Nome" value="<?php echo $seller['nome']; ?>" required>
+          <label for="cpf">CPF</label>
+          <input type="number" name="cpf" id="cpf" class="form-control" placeholder="CPF" value="<?php echo $seller['cpf']; ?>" required>
+          <label for="salario">Salário</label>
+          <input type="number" name="salario" id="salario" class="form-control" placeholder="Salário" value="<?php echo $seller['salario']; ?>" required>
+          <label for="senha">Senha</label>
+          <input type="password" name="senha" id="senha" class="form-control" placeholder="Senha" value="<?php echo $seller['senha']; ?>" required>
+          <div class="radio-form">
+            <p>Status</p>
+            <div class="option">
+              <input type="radio" name="status" id="ativo" value="A" <?php if ($seller['status'] == "A") { echo "checked"; } ?>>
+              <label for="ativo">Ativo</label>
+            </div>
+            <div class="option">
+              <input type="radio" name="status" id="inativo" value="I" <?php if ($seller['status'] == "I") { echo "checked"; } ?>>
+              <label for="inativo">Inativo</label>
+            </div>
+          </div>
+          <input type="hidden" name="id-editar" value="<?php echo $seller['idpessoa']; ?>">
+          <button type="submit" name="submit-edit-seller" class="btn btn-warning">Editar</button>
+        </form>
+      </section>
     </main>
   </body>
 

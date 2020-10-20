@@ -107,3 +107,20 @@ main.search-results {
   align-items: center;
   justify-content: flex-start;
 }
+
+/* EDIT PAGE */
+.edit-page .users {
+  height: 100%;
+  width: 40%;
+}
+
+.edit-page form p {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.edit-page form .option {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
