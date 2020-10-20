@@ -56,10 +56,9 @@ if (isset($_POST['submit-password'])) {
   include 'config/connection.php';
   $cliente = mysqli_query($conn, "SELECT * FROM pessoas WHERE cpf = '$cpf'");
 
+
   if (mysqli_num_rows($cliente) > 0) {
     // user exists
-    mysqli_free_result($cliente);
-
     $sql = "UPDATE pessoas SET senha = '$password' WHERE cpf = '$cpf'";
 
     if (mysqli_query($conn, $sql)) {

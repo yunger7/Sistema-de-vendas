@@ -48,7 +48,7 @@ if (isset($_POST['submit-cliente'])) {
       } else {
         echo "
           <script language='javascript' type='text/javascript'>
-            alert('Não foi possível cadastrar o cliente!');
+            alert('Houve um problema ao cadastrar o cliente!');
             window.location.href = 'clientes.php';
           </script>
         ";
@@ -56,7 +56,7 @@ if (isset($_POST['submit-cliente'])) {
     } else {
       echo "
         <script language='javascript' type='text/javascript'>
-          alert('Não foi possível cadastrar o cliente!');
+          alert('Houve um problema ao cadastrar o cliente!');
           window.location.href = 'clientes.php';
         </script>
       ";

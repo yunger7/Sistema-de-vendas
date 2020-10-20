@@ -2,9 +2,9 @@
 $servername = "localhost";
 $database = "sistemavendas";
 $username = "root";
-$password = "";
+$databasePassword = "";
 
-$conn = mysqli_connect($servername, $username, $password, $database);
+$conn = mysqli_connect($servername, $username, $databasePassword, $database);
 
 if (!$conn) {
   die(mysqli_connect_error());
