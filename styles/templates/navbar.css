@@ -4,6 +4,7 @@
   position: fixed;
   bottom: 0;
   transition: 200ms ease;
+  z-index: 1000;
 }
 
 .nav-bar-nav {

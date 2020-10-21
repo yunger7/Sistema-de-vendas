@@ -1,0 +1,47 @@
+.search {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.search .input-group {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.search form button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.search .search-letters {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.search form input[type='submit'] {
+  padding: 0 5px;
+}
+
+.products {
+  text-align: center;
+  padding: 1rem;
+}
+
+.products .product {
+  margin: 1rem;
+  padding: 1rem;
+  background-color: var(--light);
+  cursor: default;
+}
+
+.products .product .in-stock, .products .product .out-of-stock {
+  margin-top: 1rem;
+}
+
+.products .product .in-stock {
+  color: var(--green);
+}
+
+.products .product .out-of-stock {
+  color: var(--red);
+}
