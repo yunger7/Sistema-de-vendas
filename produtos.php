@@ -12,13 +12,13 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   sort($_SESSION['cart']);
 
 
-  /* CHANGE ITEM QUANTITY */
+  /* CHANGE PRODUCT QUANTITY */
   if (isset($_GET['quant'])) {
     $quant = $_POST['quant'];
     $idEdit = $_POST['id'];
 
     for ($i = 0; $i < count($_SESSION['cart']); $i++) {
-      if ($_SESSION['cart'][$i]['id'] == $idEdit) {
+      if ($_SESSION['cart'][$i]['id'] === $idEdit) {
         include 'config/connection.php';
 
         $res = mysqli_query($conn, "SELECT estoque FROM produtos WHERE idproduto = '$idEdit' ");
@@ -39,13 +39,25 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
       }
     }
   }
+
+  /* ADD DISCOUNT TO PRODUCT */
+  if (isset($_GET['disc'])) {
+    $idEdit = $_POST['id'];
+    $discount = $_POST['disc'];
+
+    for ($i = 0; $i < count($_SESSION['cart']); $i++) {
+      if ($_SESSION['cart'][$i]['id'] === $idEdit) {
+        $_SESSION['cart'][$i]['disc'] = $discount;
+      }
+    }
+  }
   
   /* DELETE ITEMS FROM CART */
   if (isset($_GET['remove'])) {
     $idRemove = $_GET['id'];
 
     for ($i = 0; $i < count($_SESSION['cart']); $i++) {
-      if ($_SESSION['cart'][$i]['id'] == $idRemove) {
+      if ($_SESSION['cart'][$i]['id'] === $idRemove) {
         unset($_SESSION['cart'][$i]);
       }
     }
@@ -112,7 +124,20 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
                     <td>
                       <form action="<?php echo $_SERVER['PHP_SELF']; ?>?cart&disc" method="POST">
                         <input type="hidden" name="id" value="<?php echo $cartItem['id']; ?>">
-                        <input type="number" name="disc" min="0" class="disc form-control" placeholder="R$ 0,00">
+                        <input type="number" name="disc" min="0" max="100" class="disc form-control" placeholder="0%"
+                        <?php
+                        if (!empty($_SESSION['cart'])) {
+                          for ($i = 0; $i < count($_SESSION['cart']); $i++) {
+                            if ($_SESSION['cart'][$i]['id'] === $cartItem['id']) {
+                              if ($_SESSION['cart'][$i]['disc'] !== 0) {
+                                $disc = $_SESSION['cart'][$i]['disc'];
+                                echo "value='". $disc ."'";
+                              }
+                            }
+                          }
+                        }
+                        ?>
+                        >
                       </form>
                     </td>
                     <td>R$ 
@@ -125,7 +150,13 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
                             if ($_SESSION['cart'][$i]['quant'] !== 1) {
                               $quant = $_SESSION['cart'][$i]['quant'];
                               $newValue = $defaultValue * $quant;
-                              echo number_format((float)$newValue, 2, '.', '');
+                              if ($_SESSION['cart'][$i]['disc'] !== 0) {
+                                $discount = $_SESSION['cart'][$i]['disc'];
+                                $discountPrice = $newValue - ($discount / 100) * $newValue;
+                                echo number_format((float)$discountPrice, 2, '.', '');
+                              } else {                              
+                                echo number_format((float)$newValue, 2, '.', '');
+                              }
                             } else {
                               echo $defaultValue;
                             }
@@ -143,7 +174,31 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
         <section class="finish">
           <div class="total">
             <p class="h5"><strong>Total</strong></p>
-            <p class="total-value">R$ 50,00</p>
+            <p class="total-value">R$ 
+              <?php
+              // if (!empty($_SESSION['cart'])) {
+              //   $sum = 0;
+                
+              //   for ($i = 0; $i < count($_SESSION['cart']); $i++) {
+              //     $defaultValue = $_SESSION['cart'][$i]['value'];
+              //     if ($_SESSION['cart'][$i]['quant'] !== 1) {
+              //       $quant = $_SESSION['cart'][$i]['quant'];
+              //       $newValue = $defaultValue * $quant;
+              //     } else {
+              //       $quant = 1;
+              //     }
+              //     if ($_SESSION['cart'][$i]['disc'] !== 0) {
+              //       $disc = $_SESSION['cart'][$i]['disc'];
+              //       $discountPrice = $newValue - ($discount / 100) * $newValue;
+              //     } else {
+              //       $disc = 0;
+              //     }
+              //   }
+              // } else {
+              //   echo "0,00";
+              // }
+              ?>
+            </p>
           </div>
           <div class="buttons">
             <a href="produtos.php" class="btn btn-secondary">Cancelar</a>
