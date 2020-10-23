@@ -7,6 +7,14 @@
   align-items: center;
 }
 
+#topbar #cart-logo {
+  color: #72B7C1;
+}
+
+#top-bar #cart {
+  color: var(--info);
+}
+
 #topbar .hello-user {
   display: flex;
   align-items: center;

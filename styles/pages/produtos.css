@@ -45,3 +45,67 @@
 .products .product .out-of-stock {
   color: var(--red);
 }
+
+/* CART PAGE */
+#cart main {
+  padding: 0 !important;
+}
+
+#cart main form {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Remove input number arrows */
+#cart input::-webkit-outer-spin-button, #cart input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#cart form input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+#cart table input[type='number']::placeholder {
+  text-align: center;
+}
+
+#cart table input.quant {
+  max-width: 75px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+#cart table input.desc {
+  max-width: 100px;
+  margin: 0 auto;
+}
+
+#cart .finish {
+  width: 20%;
+  margin-left: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#cart .finish .total {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-right: 3rem;
+}
+
+#cart .finish .buttons {
+  display: flex;
+  align-items: center;
+}
+
+#cart .finish .buttons > * {
+  margin: 0 0.4rem;
+}
