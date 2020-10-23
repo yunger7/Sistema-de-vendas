@@ -8,25 +8,36 @@ if ($_SESSION['status'] !== "logged") {
 /* SEND PAGES */
 if (isset($_GET['cart'])) { /* Cart page */ ?>
   <?php
-  /* SORT CART */
+  // Sort cart
   sort($_SESSION['cart']);
 
-  print_r($_SESSION['cart']);
-  echo "<br/>";
-  print_r($_SESSION['value']);
 
   /* CHANGE ITEM QUANTITY */
   if (isset($_GET['quant'])) {
     $quant = $_POST['quant'];
-    $id = $_POST['id'];
+    $idEdit = $_POST['id'];
 
+    for ($i = 0; $i < count($_SESSION['cart']); $i++) {
+      if ($_SESSION['cart'][$i]['id'] == $idEdit) {
+        include 'config/connection.php';
 
-    // Verify if item already has quantity
-    // (still working on it)
+        $res = mysqli_query($conn, "SELECT estoque FROM produtos WHERE idproduto = '$idEdit' ");
+        $estoque = mysqli_fetch_row($res);
 
-    $_SESSION['quant'][] = ['id' => $id, 'quant' => $quant];
+        if ($quant > $estoque[0]) {
+          echo "
+            <script language='javascript' type='text/javascript'>
+            alert('Valor inserido acima do estoque');
+            </script>
+          ";
+        } else {
+          $_SESSION['cart'][$i]['quant'] = $quant;
+        }
 
-    print_r($_SESSION['quant']);
+        mysqli_free_result($res);
+        mysqli_close($conn);
+      }
+    }
   }
   
   /* DELETE ITEMS FROM CART */
@@ -34,7 +45,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
     $idRemove = $_GET['id'];
 
     for ($i = 0; $i < count($_SESSION['cart']); $i++) {
-      if ($_SESSION['cart'][$i] === $idRemove) {
+      if ($_SESSION['cart'][$i]['id'] == $idRemove) {
         unset($_SESSION['cart'][$i]);
       }
     }
@@ -73,33 +84,55 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
             </tr>
           </thead>
           <tbody>
-            <?php foreach ($products as $product) { ?>
-              <?php foreach ($_SESSION['cart'] as $item) { ?>
-                <?php if ($item == $product['idproduto']) { ?>
+            <?php foreach($products as $product){ ?>
+              <?php foreach($_SESSION['cart'] as $cartItem){ ?>
+                <?php if ($cartItem['id'] === $product['idproduto']){ ?>
                   <tr>
-                    <td><a href="produtos.php?cart&remove&id=<?php echo $item; ?>" class="btn btn-danger">X</a></td>
+                    <td><a href="produtos.php?cart&remove&id=<?php echo $cartItem['id']; ?>" class="btn btn-danger">X</a></td>
                     <td><?php echo $product['descricao']; ?></td>
                     <td>
                       <form action="<?php echo $_SERVER['PHP_SELF']; ?>?cart&quant" method="POST">
+                        <input type="hidden" name="id" value="<?php echo $cartItem['id']; ?>">
                         <input type="number" name="quant" min="1" class="quant form-control" placeholder="1"
                         <?php
-                        foreach ($_SESSION['quant'] as $itemQuant) {
-                          if ($itemQuant['id'] == $item) {
-                            echo "value='". $itemQuant['quant'] ."'";
+                        if (!empty($_SESSION['cart'])) {
+                          for ($i = 0; $i < count($_SESSION['cart']); $i++) {
+                            if ($_SESSION['cart'][$i]['id'] === $cartItem['id']) {
+                              if ($_SESSION['cart'][$i]['quant'] !== 1) {
+                                $quant = $_SESSION['cart'][$i]['quant'];
+                                echo "value='". $quant ."'";
+                              }
+                            }
                           }
                         }
                         ?>
                         >
-                        <input type="hidden" name="id" value="<?php echo $item; ?>">
                       </form>
                     </td>
                     <td>
-                      <form action="<?php echo $_SERVER['PHP_SELF']; ?>?cart&desc" method="POST">
-                        <input type="number" name="desc" min="0" class="desc form-control" placeholder="R$ 0,00">
-                        <input type="hidden" name="id" value="<?php echo $item; ?>">
+                      <form action="<?php echo $_SERVER['PHP_SELF']; ?>?cart&disc" method="POST">
+                        <input type="hidden" name="id" value="<?php echo $cartItem['id']; ?>">
+                        <input type="number" name="disc" min="0" class="disc form-control" placeholder="R$ 0,00">
                       </form>
                     </td>
-                    <td>R$
+                    <td>R$ 
+                      <?php
+                      if (!empty($_SESSION['cart'])) {
+                        $defaultValue = $product['valor'];
+
+                        for ($i = 0; $i < count($_SESSION['cart']); $i++) {
+                          if ($_SESSION['cart'][$i]['id'] === $cartItem['id']) {
+                            if ($_SESSION['cart'][$i]['quant'] !== 1) {
+                              $quant = $_SESSION['cart'][$i]['quant'];
+                              $newValue = $defaultValue * $quant;
+                              echo number_format((float)$newValue, 2, '.', '');
+                            } else {
+                              echo $defaultValue;
+                            }
+                          }
+                        }
+                      }
+                      ?>
                     </td>
                   </tr>
                 <?php } ?>
@@ -128,18 +161,26 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   if (!isset($_GET['add-to-cart'])) {
     // First load
     $_SESSION['cart'] = [];
-    $_SESSION['quant'] = [];
-    $_SESSION['desc'] = [];
-    $_SESSION['value'] = [];
   }
 
   if (isset($_GET['add-to-cart'])) {
     $id = $_GET['id-produto'];
     $value = $_GET['value'];
 
-    if (!in_array($id, $_SESSION['cart'])) {
-      $_SESSION['cart'][] = $id;
-      $_SESSION['value'][] = ['id' => $id, 'value' => $value];
+    if (empty($_SESSION['cart'])) {
+      $_SESSION['cart'][] = ['id' => $id, 'value' => $value, 'quant' => 1, 'disc' => 0];
+    } else {
+      // check if product is already in the cart
+      $exist = 0;
+      foreach ($_SESSION['cart'] as $cartItem) {
+        if ($cartItem['id'] === $id) {
+          $exist = 1;
+        }
+      }
+
+      if ($exist === 0) {
+        $_SESSION['cart'][] = ['id' => $id, 'value' => $value, 'quant' => 1, 'disc' => 0];
+      }
     }
   }
 
@@ -206,16 +247,45 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
                   <p class="h6"><?php echo $product['descricao']; ?></p>
                   <p>R$ <?php echo $product['valor']; ?></p>
                   <?php if ($product['estoque'] > 0) { ?>
-                    <button type="submit" name="add-to-cart" class="btn btn-info" <?php if (in_array($product['idproduto'], $_SESSION['cart'])) { echo "disabled"; } ?>>
-                      <?php if (in_array($product['idproduto'], $_SESSION['cart'])) {
+                    <button type="submit" name="add-to-cart" class="btn btn-info" 
+                      <?php
+                      if (!empty($_SESSION['cart'])) {
+                        $empty = 0;
+                        foreach ($_SESSION['cart'] as $cartItem) {
+                          if ($cartItem['id'] === $product['idproduto']) {
+                            $empty = 1;
+                          }
+                        }
+
+                        if ($empty === 1) {
+                          echo "disabled";
+                        }
+                      }
+
+                      ?>
+                    >
+                    <?php
+                    if (!empty($_SESSION['cart'])) {
+                      $empty = 0;
+                      foreach ($_SESSION['cart'] as $cartItem) {
+                        if ($cartItem['id'] === $product['idproduto']) {
+                          $empty = 1;
+                        }
+                      }
+
+                      if ($empty === 1) {
                         echo "Adicionado";
                       } else {
                         echo "Adicionar";
-                      } ?>
+                      }
+                    } else {
+                      echo "Adicionar";
+                    }
+                    ?>
                     </button>
                     <input type="hidden" name="id-produto" value="<?php echo $product['idproduto']; ?>">
                     <input type="hidden" name="value" value="<?php echo $product['valor']; ?>">
-                    <p class="in-stock">Disponível <?php echo $product['estoque'] ?></ span>
+                    <p class="in-stock">Disponível <?php echo $product['estoque'] ?>
                     </p>
                   <?php } else { ?>
                     <p class="out-of-stock">Indisponível</p>
@@ -225,19 +295,49 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
               <?php $gridCount += 1; ?>
             <?php } else { ?>
               <div class="product col-sm <?php if ($product['estoque'] > 0) { echo "border"; } ?> rounded">
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
+              <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
                   <p class="h6"><?php echo $product['descricao']; ?></p>
                   <p>R$ <?php echo $product['valor']; ?></p>
                   <?php if ($product['estoque'] > 0) { ?>
-                    <button type="submit" name="add-to-cart" class="btn btn-info" <?php if (in_array($product['idproduto'], $_SESSION['cart'])) { echo "disabled"; } ?>>
-                      <?php if (in_array($product['idproduto'], $_SESSION['cart'])) {
+                    <button type="submit" name="add-to-cart" class="btn btn-info" 
+                      <?php
+                      if (!empty($_SESSION['cart'])) {
+                        $empty = 0;
+                        foreach ($_SESSION['cart'] as $cartItem) {
+                          if ($cartItem['id'] === $product['idproduto']) {
+                            $empty = 1;
+                          }
+                        }
+
+                        if ($empty === 1) {
+                          echo "disabled";
+                        }
+                      }
+
+                      ?>
+                    >
+                    <?php
+                    if (!empty($_SESSION['cart'])) {
+                      $empty = 0;
+                      foreach ($_SESSION['cart'] as $cartItem) {
+                        if ($cartItem['id'] === $product['idproduto']) {
+                          $empty = 1;
+                        }
+                      }
+
+                      if ($empty === 1) {
                         echo "Adicionado";
                       } else {
                         echo "Adicionar";
-                      } ?>
+                      }
+                    } else {
+                      echo "Adicionar";
+                    }
+                    ?>
                     </button>
                     <input type="hidden" name="id-produto" value="<?php echo $product['idproduto']; ?>">
-                    <p class="in-stock">Disponível <?php echo $product['estoque'] ?></ span>
+                    <input type="hidden" name="value" value="<?php echo $product['valor']; ?>">
+                    <p class="in-stock">Disponível <?php echo $product['estoque'] ?>
                     </p>
                   <?php } else { ?>
                     <p class="out-of-stock">Indisponível</p>

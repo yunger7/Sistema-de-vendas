@@ -80,9 +80,10 @@
   text-align: center;
 }
 
-#cart table input.desc {
+#cart table input.disc {
   max-width: 100px;
   margin: 0 auto;
+  text-align: center;
 }
 
 #cart .finish {
