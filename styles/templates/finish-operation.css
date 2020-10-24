@@ -5,11 +5,6 @@ main {
   justify-content: center;
 }
 
-main svg {
-  width: 50%;
-  height: auto;
-}
-
 main div {
   display: flex;
   flex-direction: column;
@@ -21,6 +16,53 @@ main div {
   color: var(--success);
 }
 
+#success svg {
+  width: 15rem;
+  height: auto;
+}
+
 #error {
   color: var(--danger);
+}
+
+#error svg {
+  width: 50%;
+  height: auto;
+}
+
+/* TEST */
+.svg-success {
+  stroke-width: 2px;
+  stroke: var(--success);
+  fill: none;
+}
+.svg-success path {
+  stroke-dasharray: 17px, 17px;
+  stroke-dashoffset: 0px;
+  -webkit-animation: checkmark 0.25s ease-in-out 0.7s backwards;
+  animation: checkmark 0.25s ease-in-out 0.7s backwards;
+}
+.svg-success circle {
+  stroke-dasharray: 76px, 76px;
+  stroke-dashoffset: 0px;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  -webkit-animation: checkmark-circle 0.6s ease-in-out forwards;
+  animation: checkmark-circle 0.6s ease-in-out forwards;
+}
+@keyframes checkmark {
+  0% {
+    stroke-dashoffset: 17px;
+ }
+  100% {
+    stroke-dashoffset: 0;
+ }
+}
+@keyframes checkmark-circle {
+  0% {
+    stroke-dashoffset: 76px;
+ }
+  100% {
+    stroke-dashoffset: 0px;
+ }
 }
