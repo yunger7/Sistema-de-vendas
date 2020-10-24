@@ -61,6 +61,8 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
         unset($_SESSION['cart'][$i]);
       }
     }
+
+    sort($_SESSION['cart']);
   }
 
   /* GET DATA FROM DATABASE */
