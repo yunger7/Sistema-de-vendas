@@ -1,0 +1,18 @@
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+main p {
+  letter-spacing: 0.15em;
+}
+
+#success {
+  color: var(--success);
+}
+
+#error {
+  color: var(--danger);
+}

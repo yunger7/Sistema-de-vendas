@@ -5,6 +5,80 @@ if ($_SESSION['status'] !== "logged") {
   header('location: index.php');
 }
 
+/* SUBMIT ORDER */
+if (isset($_POST['submit-order'])) {
+  $orderValue = $_POST['order-value'];
+  $userId = $_SESSION['user-id'];
+  $clientId = $_POST['client-id'];
+
+  include 'config/connection.php';
+
+  $res = mysqli_query($conn, "SELECT idvendedor FROM vendedores WHERE fk_idpessoa = '$userId'");
+  $res2 = mysqli_fetch_array($res);
+  $sellerId = $res2['idvendedor'];
+
+  mysqli_free_result($res);
+
+  $sql = "INSERT INTO pedidos(valor, fk_idvendedor, fk_idcliente) VALUES ('$orderValue', '$sellerId', '$clientId')";
+
+  if (mysqli_query($conn, $sql)) {
+    $orderId = mysqli_insert_id($conn);
+
+    for ($i = 0; $i < count($_SESSION['cart']); $i++) {
+      $productId = $_SESSION['cart'][$i]['id'];
+      $quant = $_SESSION['cart'][$i]['quant'];
+    
+      // calculate product value
+      if ($_SESSION['cart'][$i]['disc'] == 0) {
+        if ($_SESSION['cart'][$i]['quant'] == 1) {
+          $value = $_SESSION['cart'][$i]['value'];
+        } else {
+          $value = $_SESSION['cart'][$i]['quant'] * $_SESSION['cart'][$i]['value'];
+        }
+      } else {
+        if ($_SESSION['cart'][$i]['quant'] == 1) {
+          $price = $_SESSION['cart'][$i]['value'];
+        } else {
+          $price = $_SESSION['cart'][$i]['quant'] * $_SESSION['cart'][$i]['value'];
+        }
+        $value = $price - ($discount / 100) * $price;
+      }
+
+      $sql2 = "INSERT INTO itens_pedidos(fk_idpedido, fk_idproduto, qtd, valor) VALUES ('$orderId', '$productId', '$quant', '$value')";
+
+      if (mysqli_query($conn, $sql2)) {
+        $success = 1;
+      } else {
+        echo "
+          <script language='javascript' type='text/javascript'>
+            alert('Houve um problema ao realizar o pedido');
+            window.location.href = 'home.php';
+          </script>
+        ";
+      }
+    }
+
+    if ($success === 1) {
+      echo "
+        <script language='javascript' type='text/javascript'>
+          alert('Pedido realizado com sucesso!');
+          window.location.href = 'home.php';
+        </script>
+      ";
+    }
+
+  } else {
+    echo "
+      <script language='javascript' type='text/javascript'>
+        alert('Houve um problema ao realizar o pedido');
+        window.location.href = 'home.php';
+      </script>
+    ";
+  }
+
+  mysqli_close($conn);
+}
+
 /* SEND PAGES */
 if (isset($_GET['cart'])) { /* Cart page */ ?>
   <?php
@@ -198,7 +272,9 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
           </div>
           <div class="buttons">
             <a href="produtos.php" class="btn btn-secondary">Cancelar</a>
-            <button type="submit" class="btn btn-info">Finalizar pedido</button>
+            <a href="<?php if (!empty($_SESSION['cart'])) { echo "produtos.php?final";} else { echo "#"; } ?>">
+              <button type="button" class="btn btn-info" <?php if (empty($_SESSION['cart'])) { echo "disabled"; } ?>>Finalizar Pedido</button>
+            </a>
           </div>
         </section>
     </main>
@@ -404,6 +480,147 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   </body>
 
   </html>
+<?php } else if (isset($_GET['final']) || isset($_GET['final-name']) || isset($_GET['final-letter'])) { /* Finalize order page */ ?>
+  <?php if (isset($_GET['final-name']) || isset($_GET['final-letter'])) {  /* Choose client (list) */ ?>
+    <?php
+    include 'config/connection.php';
+
+    $cases = [$_GET['final-name'] ?? "", $_GET['final-letter'] ?? ""];
+  
+    switch ($cases) {
+        // search by name
+      case ($cases[0] !== "" && $cases[1] === ""):
+        $name = $_GET['final-name'];
+        $sql = "SELECT * FROM clientes JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa WHERE nome LIKE '%$name%'";
+        break;
+        // search by letter
+      case ($cases[0] === "" && $cases[1] !== ""):
+        $letter = $_GET['final-letter'];
+        $sql = "SELECT * FROM clientes JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa WHERE nome LIKE '$letter%'";
+        break;
+        // empty search  
+      case ($cases[0] === "" && $cases[1] === ""):
+        $sql = "SELECT * FROM clientes JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa";
+        break;
+    }
+  
+    // Database search
+    $res = mysqli_query($conn, $sql);
+  
+    if (mysqli_num_rows($res) > 0) {
+      $searchResults = 1;
+      $clients = mysqli_fetch_all($res, MYSQLI_ASSOC);
+    } else {
+      $searchResults = 0;
+    }
+  
+    mysqli_free_result($res);
+    mysqli_close($conn);
+    ?>
+    <!DOCTYPE html>
+    <html lang="pt-br">
+    <head>
+      <?php include 'templates/head.php';?>
+      <link rel="stylesheet" href="styles/pages/produtos.css">
+    </head>
+    <body id="final-list">
+      <?php include 'templates/navbar.php'; ?>
+      <?php include 'templates/topbar.php'; ?>
+      <main>
+        <?php if ($searchResults == 0) { ?>
+          <table class="table table-hover border text-center">
+            <thead>
+              <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">CPF</th>
+                <th scope="col">Renda</th>
+                <th scope="col">Crédito</th>
+                <th scope="col">Opções</th>
+              </tr>
+            </thead>
+          </table>
+          <p class="text-center h5 mt-4">Não foram encontrados resultados para sua busca ＞﹏＜</p>
+          <a href="clientes.php" class="btn btn-secondary mt-3">Voltar</a>
+        <?php } else { ?>
+          <table class="table table-hover border text-center">
+            <thead>
+              <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">CPF</th>
+                <th scope="col">Renda</th>
+                <th scope="col">Crédito</th>
+                <th scope="col">Opções</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($clients as $client) { ?>
+                <tr>
+                  <td><?php echo $client['nome']; ?></td>
+                  <td><?php echo $client['cpf']; ?></td>
+                  <td><?php echo $client['renda']; ?></td>
+                  <td><?php echo $client['credito']; ?></td>
+                  <td>
+                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                      <?php
+                      /* GET VALUES TO SUBMIT ORDER */
+                      // order value
+                      $orderValue = 0;
+                      foreach ($_SESSION['cart'] as $cartItem) {
+                        $orderValue += $cartItem['total'];
+                      }
+
+                      // client id
+                      $clientId = $client['idcliente'];
+                      ?>
+                      <input type="hidden" name="order-value" value="<?php echo $orderValue; ?>">
+                      <input type="hidden" name="client-id" value="<?php echo $clientId; ?>">
+                      <button type="submit" name="submit-order" class="btn btn-outline-info">Selecionar</button>
+                    </form>
+                  </td>
+                </tr>
+              <?php } ?>
+            </tbody>
+          </table>
+        <?php } ?>
+      </main>
+    </body>
+    </html>
+  <?php } else { /* Choose client (Search) */ ?>
+    <!DOCTYPE html>
+    <html lang="pt-br">
+    <head>
+      <?php include 'templates/head.php';?>
+      <link rel="stylesheet" href="styles/pages/produtos.css">
+    </head>
+    <body id="final-search">
+      <main>
+        <h1>Insira os dados do cliente</h1>
+        <section class="search">
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
+          <div class="input-group">
+            <input type="text" name="final-name" id="product-name" class="form-control" placeholder="Deixe em branco para pesquisar todos os clientes">
+            <div class="input-group-append">
+              <button type="submit" class="btn btn-outline-info">
+                <svg id="search-input-button" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                  <path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="search-letters">
+            <?php
+            $alfabeto = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+            foreach ($alfabeto as $letra) {
+              echo "<input type='submit' name='final-letter' value='$letra' class='btn btn-link'>";
+            }
+            ?>
+          </div>
+        </form>
+      </section>
+      </main>
+    </body>
+    </html>
+  <?php } ?>
 <?php } else { /* Index page */ ?>
   <?php
   /* ADD PRODUCTS TO CART */
