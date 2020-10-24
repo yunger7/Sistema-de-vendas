@@ -11,7 +11,6 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   // Sort cart
   sort($_SESSION['cart']);
 
-
   /* CHANGE PRODUCT QUANTITY */
   if (isset($_GET['quant'])) {
     $quant = $_POST['quant'];
@@ -32,6 +31,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
           ";
         } else {
           $_SESSION['cart'][$i]['quant'] = $quant;
+          $_SESSION['cart'][$i]['total'] *= $quant;
         }
 
         mysqli_free_result($res);
@@ -48,6 +48,18 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
     for ($i = 0; $i < count($_SESSION['cart']); $i++) {
       if ($_SESSION['cart'][$i]['id'] === $idEdit) {
         $_SESSION['cart'][$i]['disc'] = $discount;
+
+        if ($_SESSION['cart'][$i]['disc'] === 0) {
+          if ($_SESSION['cart'][$i]['quant'] === 1) {
+            $_SESSION['cart'][$i]['total'] = $_SESSION['cart'][$i]['value'];
+          } else {
+            $_SESSION['cart'][$i]['total'] = $_SESSION['cart'][$i]['value'] * $_SESSION['cart'][$i]['quant'];
+          }
+        } else {
+          $total = $_SESSION['cart'][$i]['total'];
+          $discountPrice = $total - ($discount / 100) * $total;
+          $_SESSION['cart'][$i]['total'] = $discountPrice;
+        }
       }
     }
   }
@@ -145,23 +157,10 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
                     <td>R$ 
                       <?php
                       if (!empty($_SESSION['cart'])) {
-                        $defaultValue = $product['valor'];
-
                         for ($i = 0; $i < count($_SESSION['cart']); $i++) {
                           if ($_SESSION['cart'][$i]['id'] === $cartItem['id']) {
-                            if ($_SESSION['cart'][$i]['quant'] !== 1) {
-                              $quant = $_SESSION['cart'][$i]['quant'];
-                              $newValue = $defaultValue * $quant;
-                              if ($_SESSION['cart'][$i]['disc'] !== 0) {
-                                $discount = $_SESSION['cart'][$i]['disc'];
-                                $discountPrice = $newValue - ($discount / 100) * $newValue;
-                                echo number_format((float)$discountPrice, 2, '.', '');
-                              } else {                              
-                                echo number_format((float)$newValue, 2, '.', '');
-                              }
-                            } else {
-                              echo $defaultValue;
-                            }
+                            $total = $_SESSION['cart'][$i]['total'];
+                            echo number_format((float)$total, 2, '.', '');
                           }
                         }
                       }
@@ -178,27 +177,27 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
             <p class="h5"><strong>Total</strong></p>
             <p class="total-value">R$ 
               <?php
-              // if (!empty($_SESSION['cart'])) {
-              //   $sum = 0;
+              if (!empty($_SESSION['cart'])) {
+                $sum = 0;
                 
-              //   for ($i = 0; $i < count($_SESSION['cart']); $i++) {
-              //     $defaultValue = $_SESSION['cart'][$i]['value'];
-              //     if ($_SESSION['cart'][$i]['quant'] !== 1) {
-              //       $quant = $_SESSION['cart'][$i]['quant'];
-              //       $newValue = $defaultValue * $quant;
-              //     } else {
-              //       $quant = 1;
-              //     }
-              //     if ($_SESSION['cart'][$i]['disc'] !== 0) {
-              //       $disc = $_SESSION['cart'][$i]['disc'];
-              //       $discountPrice = $newValue - ($discount / 100) * $newValue;
-              //     } else {
-              //       $disc = 0;
-              //     }
-              //   }
-              // } else {
-              //   echo "0,00";
-              // }
+                for ($i = 0; $i < count($_SESSION['cart']); $i++) {
+                  $defaultValue = $_SESSION['cart'][$i]['value'];
+                  if ($_SESSION['cart'][$i]['quant'] !== 1) {
+                    $quant = $_SESSION['cart'][$i]['quant'];
+                    $newValue = $defaultValue * $quant;
+                  } else {
+                    $quant = 1;
+                  }
+                  if ($_SESSION['cart'][$i]['disc'] !== 0) {
+                    $disc = $_SESSION['cart'][$i]['disc'];
+                    $discountPrice = $newValue - ($discount / 100) * $newValue;
+                  } else {
+                    $disc = 0;
+                  }
+                }
+              } else {
+                echo "0,00";
+              }
               ?>
             </p>
           </div>
@@ -225,7 +224,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
     $value = $_GET['value'];
 
     if (empty($_SESSION['cart'])) {
-      $_SESSION['cart'][] = ['id' => $id, 'value' => $value, 'quant' => 1, 'disc' => 0];
+      $_SESSION['cart'][] = ['id' => $id, 'value' => $value, 'quant' => 1, 'disc' => 0, 'total' => $value];
     } else {
       // check if product is already in the cart
       $exist = 0;
@@ -236,7 +235,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
       }
 
       if ($exist === 0) {
-        $_SESSION['cart'][] = ['id' => $id, 'value' => $value, 'quant' => 1, 'disc' => 0];
+        $_SESSION['cart'][] = ['id' => $id, 'value' => $value, 'quant' => 1, 'disc' => 0, 'total' => $value];
       }
     }
   }
