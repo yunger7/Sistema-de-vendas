@@ -49,6 +49,10 @@
 /* CART PAGE */
 #cart main {
   padding: 0 !important;
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 #cart main form {
