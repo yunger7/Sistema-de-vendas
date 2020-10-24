@@ -31,7 +31,12 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
           ";
         } else {
           $_SESSION['cart'][$i]['quant'] = $quant;
-          $_SESSION['cart'][$i]['total'] *= $quant;
+
+          if ($_SESSION['cart'][$i]['quant'] == 1) {  
+            $_SESSION['cart'][$i]['total'] = $_SESSION['cart'][$i]['value'];
+          } else {
+            $_SESSION['cart'][$i]['total'] *= $quant;
+          }
         }
 
         mysqli_free_result($res);
@@ -47,18 +52,20 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
 
     for ($i = 0; $i < count($_SESSION['cart']); $i++) {
       if ($_SESSION['cart'][$i]['id'] === $idEdit) {
-        $_SESSION['cart'][$i]['disc'] = $discount;
+        if ($discount !== $_SESSION['cart'][$i]['disc']) {
+          $_SESSION['cart'][$i]['disc'] = $discount;
 
-        if ($_SESSION['cart'][$i]['disc'] === 0) {
-          if ($_SESSION['cart'][$i]['quant'] === 1) {
-            $_SESSION['cart'][$i]['total'] = $_SESSION['cart'][$i]['value'];
+          if ($_SESSION['cart'][$i]['disc'] === 0) {
+            if ($_SESSION['cart'][$i]['quant'] === 1) {
+              $_SESSION['cart'][$i]['total'] = $_SESSION['cart'][$i]['value'];
+            } else {
+              $_SESSION['cart'][$i]['total'] = $_SESSION['cart'][$i]['value'] * $_SESSION['cart'][$i]['quant'];
+            }
           } else {
-            $_SESSION['cart'][$i]['total'] = $_SESSION['cart'][$i]['value'] * $_SESSION['cart'][$i]['quant'];
+            $total = $_SESSION['cart'][$i]['total'];
+            $discountPrice = $total - ($discount / 100) * $total;
+            $_SESSION['cart'][$i]['total'] = $discountPrice;
           }
-        } else {
-          $total = $_SESSION['cart'][$i]['total'];
-          $discountPrice = $total - ($discount / 100) * $total;
-          $_SESSION['cart'][$i]['total'] = $discountPrice;
         }
       }
     }
@@ -76,6 +83,8 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
 
     sort($_SESSION['cart']);
   }
+
+  print_r($_SESSION['cart']);
 
   /* GET DATA FROM DATABASE */
   include 'config/connection.php';
