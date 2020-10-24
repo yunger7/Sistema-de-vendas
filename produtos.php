@@ -41,6 +41,7 @@ if (isset($_POST['submit-order'])) {
         } else {
           $price = $_SESSION['cart'][$i]['quant'] * $_SESSION['cart'][$i]['value'];
         }
+        $discount = $_SESSION['cart'][$i]['disc'];
         $value = $price - ($discount / 100) * $price;
       }
 
@@ -59,12 +60,8 @@ if (isset($_POST['submit-order'])) {
     }
 
     if ($success === 1) {
-      echo "
-        <script language='javascript' type='text/javascript'>
-          alert('Pedido realizado com sucesso!');
-          window.location.href = 'home.php';
-        </script>
-      ";
+      $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'produtos.php', 'text' => 'Pedido finalizado com sucesso!'];
+      header('location: templates/finish-operation.php');
     }
 
   } else {
