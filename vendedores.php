@@ -38,27 +38,15 @@ if (isset($_POST['submit-vendedor'])) {
 
     if (mysqli_query($conn, $sql)) {
       if (mysqli_query($conn, $sql2)) {
-        echo "
-          <script language='javascript' type='text/javascript'>
-            alert('Vendedor cadastrado com sucesso!');
-            window.location.href = 'vendedores.php';
-          </script>
-        ";
+        $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'vendedores.php', 'text' => 'Vendedor cadastrado com sucesso'];
+        header('location: templates/finish-operation.php');
       } else {
-        echo "
-          <script language='javascript' type='text/javascript'>
-            alert('Houve um problema ao cadastrar o vendedor!');
-            window.location.href = 'vendedores.php';
-          </script>
-        ";
+        $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'vendedores.php', 'text' => 'Houve um problema ao cadastrar o vendedor'];
+        header('location: templates/finish-operation.php');
       }
     } else {
-      echo "
-        <script language='javascript' type='text/javascript'>
-          alert('Houve um problema ao cadastrar o vendedor!');
-          window.location.href = 'vendedores.php';
-        </script>
-      ";
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'vendedores.php', 'text' => 'Houve um problema ao cadastrar o vendedor'];
+      header('location: templates/finish-operation.php');
     }
   }
 
@@ -80,27 +68,15 @@ if (isset($_POST['submit-edit-seller'])) {
 
   if (mysqli_query($conn, $sql)) {
     if (mysqli_query($conn, $sql2)) {
-      echo "
-        <script language='javascript' type='text/javascript'>
-          alert('Vendedor editado com sucesso!');
-          window.location.href = 'vendedores.php';
-        </script>
-      ";
+      $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'vendedores.php', 'text' => 'Vendedor editado com sucesso'];
+      header('location: templates/finish-operation.php');
     } else {
-      echo "
-        <script language='javascript' type='text/javascript'>
-          alert('Houve um problema ao editar o vendedor!');
-          window.location.href = 'vendedores.php';
-        </script>
-      ";
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'vendedores.php', 'text' => 'Houve um problema ao editar o vendedor'];
+      header('location: templates/finish-operation.php');
     }
   } else {
-    echo "
-      <script language='javascript' type='text/javascript'>
-        alert('Houve um problema ao editar o vendedor!');
-        window.location.href = 'vendedores.php';
-      </script>
-    ";
+    $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'vendedores.php', 'text' => 'Houve um problema ao editar o vendedor'];
+    header('location: templates/finish-operation.php');
   }
 
   mysqli_close($conn);
@@ -133,27 +109,15 @@ if (isset($_GET['delete-seller'])) {
 
   if (mysqli_query($conn, $sql)) {
     if (mysqli_query($conn, "DELETE FROM pessoas WHERE idpessoa = '$idExcluir'")) {
-      echo "
-        <script language='javascript' type='text/javascript'>
-          alert('Cliente excluído com sucesso!');
-          window.location.href = 'clientes.php';
-        </script>
-      ";
+      $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'vendedores.php', 'text' => 'Vendedor excluído com sucesso'];
+      header('location: templates/finish-operation.php');
     } else {
-      echo "
-        <script language='javascript' type='text/javascript'>
-          alert('Houve um problema ao excluir o cliente');
-          window.location.href = 'clientes.php';
-        </script>
-      ";
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'vendedores.php', 'text' => 'Houve um problema ao excluir o vendedor'];
+      header('location: templates/finish-operation.php');
     }
   } else {
-    echo "
-      <script language='javascript' type='text/javascript'>
-        alert('Houve um problema ao excluir o cliente');
-        window.location.href = 'clientes.php';
-      </script>
-    ";
+    $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'vendedores.php', 'text' => 'Houve um problema ao excluir o vendedor'];
+    header('location: templates/finish-operation.php');
   }
 
   mysqli_close($conn);

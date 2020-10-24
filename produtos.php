@@ -50,12 +50,8 @@ if (isset($_POST['submit-order'])) {
       if (mysqli_query($conn, $sql2)) {
         $success = 1;
       } else {
-        echo "
-          <script language='javascript' type='text/javascript'>
-            alert('Houve um problema ao realizar o pedido');
-            window.location.href = 'home.php';
-          </script>
-        ";
+        $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'produtos.php', 'text' => 'Houve um problema ao finalizar o pedido'];
+        header('location: templates/finish-operation.php');
       }
     }
 
@@ -65,12 +61,8 @@ if (isset($_POST['submit-order'])) {
     }
 
   } else {
-    echo "
-      <script language='javascript' type='text/javascript'>
-        alert('Houve um problema ao realizar o pedido');
-        window.location.href = 'home.php';
-      </script>
-    ";
+    $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'produtos.php', 'text' => 'Houve um problema ao finalizar o pedido'];
+    header('location: templates/finish-operation.php');
   }
 
   mysqli_close($conn);

@@ -39,27 +39,15 @@ if (isset($_POST['submit-cliente'])) {
 
     if (mysqli_query($conn, $sql)) {
       if (mysqli_query($conn, $sql2)) {
-        echo "
-          <script language='javascript' type='text/javascript'>
-            alert('Cliente cadastrado com sucesso!');
-            window.location.href = 'clientes.php';
-          </script>
-        ";
+        $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'clientes.php', 'text' => 'Cliente cadastrado com sucesso'];
+        header('location: templates/finish-operation.php');
       } else {
-        echo "
-          <script language='javascript' type='text/javascript'>
-            alert('Houve um problema ao cadastrar o cliente!');
-            window.location.href = 'clientes.php';
-          </script>
-        ";
+        $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'clientes.php', 'text' => 'Houve um problema ao finalizar o pedido'];
+        header('location: templates/finish-operation.php');
       }
     } else {
-      echo "
-        <script language='javascript' type='text/javascript'>
-          alert('Houve um problema ao cadastrar o cliente!');
-          window.location.href = 'clientes.php';
-        </script>
-      ";
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'clientes.php', 'text' => 'Houve um problema ao finalizar o pedido'];
+      header('location: templates/finish-operation.php');
     }
   }
 
@@ -81,27 +69,15 @@ if (isset($_POST['submit-edit-client'])) {
 
   if (mysqli_query($conn, $sql)) {
     if (mysqli_query($conn, $sql2)) {
-      echo "
-        <script language='javascript' type='text/javascript'>
-          alert('Cliente editado com sucesso!');
-          window.location.href = 'clientes.php';
-        </script>
-      ";
+      $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'clientes.php', 'text' => 'Cliente editado com sucesso'];
+      header('location: templates/finish-operation.php');
     } else {
-      echo "
-        <script language='javascript' type='text/javascript'>
-          alert('Houve um problema ao editar o cliente!');
-          window.location.href = 'clientes.php';
-        </script>
-      ";
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'clientes.php', 'text' => 'Houve um problema ao editar o cliente'];
+      header('location: templates/finish-operation.php');
     }
   } else {
-    echo "
-      <script language='javascript' type='text/javascript'>
-        alert('Houve um problema ao editar o cliente!');
-        window.location.href = 'clientes.php';
-      </script>
-    ";
+    $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'clientes.php', 'text' => 'Houve um problema ao editar o cliente'];
+    header('location: templates/finish-operation.php');
   }
 
   mysqli_close($conn);
@@ -135,27 +111,15 @@ if (isset($_GET['delete-client'])) {
 
   if (mysqli_query($conn, $sql)) {
     if (mysqli_query($conn, "DELETE FROM pessoas WHERE idpessoa = '$idExcluir'")) {
-      echo "
-        <script language='javascript' type='text/javascript'>
-          alert('Cliente excluído com sucesso!');
-          window.location.href = 'clientes.php';
-        </script>
-      ";
+      $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'clientes.php', 'text' => 'Cliente excluído com sucesso'];
+      header('location: templates/finish-operation.php');
     } else {
-      echo "
-        <script language='javascript' type='text/javascript'>
-          alert('Houve um problema ao excluir o cliente');
-          window.location.href = 'clientes.php';
-        </script>
-      ";
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'clientes.php', 'text' => 'Houve um problema ao excluir o cliente'];
+      header('location: templates/finish-operation.php');
     }
   } else {
-    echo "
-      <script language='javascript' type='text/javascript'>
-        alert('Houve um problema ao excluir o cliente');
-        window.location.href = 'clientes.php';
-      </script>
-    ";
+    $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'clientes.php', 'text' => 'Houve um problema ao excluir o cliente'];
+    header('location: templates/finish-operation.php');;
   }
 
   mysqli_close($conn);
