@@ -63,8 +63,9 @@ if (isset($_POST['submit-edit-client'])) {
   $cpf = $_POST['cpf'];
   $renda = $_POST['renda'];
   $credito = $_POST['credito'];
+  $status = $_POST['status'];
 
-  $sql = "UPDATE pessoas SET nome = '$nome', cpf = '$cpf' WHERE idpessoa = '$idEditar'";
+  $sql = "UPDATE pessoas SET nome = '$nome', cpf = '$cpf', status = '$status' WHERE idpessoa = '$idEditar'";
   $sql2 = "UPDATE clientes SET renda = '$renda', credito = '$credito' WHERE fk_idpessoa = '$idEditar'";
 
   if (mysqli_query($conn, $sql)) {

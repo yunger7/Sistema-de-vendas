@@ -62,8 +62,9 @@ if (isset($_POST['submit-edit-seller'])) {
   $cpf = $_POST['cpf'];
   $salario = $_POST['salario'];
   $senha = base64_encode($_POST['senha']);
+  $status = $_POST['status'];
 
-  $sql = "UPDATE pessoas SET nome = '$nome', cpf = '$cpf', senha = '$senha' WHERE idpessoa = '$idEditar'";
+  $sql = "UPDATE pessoas SET nome = '$nome', cpf = '$cpf', status = '$status', senha = '$senha' WHERE idpessoa = '$idEditar'";
   $sql2 = "UPDATE vendedores SET salario = '$salario' WHERE fk_idpessoa = '$idEditar'";
 
   if (mysqli_query($conn, $sql)) {
