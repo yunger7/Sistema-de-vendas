@@ -28,10 +28,17 @@
 }
 
 .products .product {
+  position: relative;
   margin: 1rem;
   padding: 1rem;
   background-color: var(--light);
   cursor: default;
+}
+
+.products .product .edit-product {
+  position: absolute;
+  top: 5px;
+  right: 5px;
 }
 
 .products .product .in-stock, .products .product .out-of-stock {
@@ -65,12 +72,12 @@
 }
 
 /* Remove input number arrows */
-#cart input::-webkit-outer-spin-button, #cart input::-webkit-inner-spin-button {
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-#cart form input[type='number'] {
+form input[type='number'] {
   -moz-appearance: textfield;
 }
 
@@ -147,4 +154,59 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+}
+
+/* EDIT PRODUCT PAGE */
+#edit-page main {
+  padding: 3rem 5rem 2rem 5rem;
+  display: flex;
+  justify-content: center;
+}
+
+#edit-page .product {
+  height: 100%;
+  width: 40%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#edit-page .product svg {
+  width: 4rem;
+  height: 4rem;
+  position: relative;
+  bottom: 25px;
+}
+
+#edit-page form {
+  width: 100%;
+  padding: 1rem 2rem;
+
+  display: flex;
+  flex-direction: column;
+}
+
+#edit-page form label {
+  margin: 0;
+}
+
+#edit-page form input {
+  margin-bottom: 1rem;
+}
+
+#edit-page form p {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+#edit-page form .option {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+#edit-page form button[type='submit'] {
+  width: 50%;
+  max-width: 250px;
+  margin: 0.8rem auto;
 }

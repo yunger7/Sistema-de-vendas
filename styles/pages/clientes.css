@@ -51,8 +51,9 @@ form input[type='number'] {
 }
 
 button[type='submit'] {
-  margin: 10px auto;
-  max-width: 200px;
+  width: 50%;
+  max-width: 250px;
+  margin: 0.8rem auto;
 }
 
 .search svg#search-input-button {
