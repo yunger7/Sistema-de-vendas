@@ -1,3 +1,7 @@
+body {
+  overflow: hidden;
+}
+
 main {
   padding: 3rem 5rem 2rem 5rem;
   display: flex;
@@ -68,6 +72,10 @@ button[type='submit'] {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.search .input-group-append, .search .input-group-append button {
+  width: 3em;
 }
 
 .search form {

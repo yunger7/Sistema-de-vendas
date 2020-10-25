@@ -1,3 +1,7 @@
+body {
+  overflow: hidden;
+}
+
 main {
   padding: 3rem 5rem 2rem 5rem;
   display: flex;
@@ -109,7 +113,7 @@ main.search-results {
 }
 
 /* EDIT PAGE */
-.edit-page .users {
+.edit-page .sellers {
   height: 100%;
   width: 40%;
 }

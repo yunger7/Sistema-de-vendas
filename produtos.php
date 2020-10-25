@@ -68,6 +68,26 @@ if (isset($_POST['submit-order'])) {
   mysqli_close($conn);
 }
 
+/* ADD PRODUCT */
+if (isset($_POST['submit-add-product'])) {
+  include 'config/connection.php';
+
+  $description = $_POST['descricao'];
+  $stock = $_POST['estoque'];
+  $value = $_POST['valor'];
+  $status = $_POST['status'];
+
+  if (mysqli_query($conn, "INSERT INTO produtos(descricao, estoque, valor, status) VALUES('$description', '$stock', '$value', '$status') ")) {
+    $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'produtos.php', 'text' => 'Produto adicionado com sucesso'];
+    header('location: templates/finish-operation.php');
+  } else {
+    $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'produtos.php', 'text' => 'Houve um problema ao adicionar o produto'];
+    header('location: templates/finish-operation.php');
+  }
+
+  mysqli_close($conn);
+}
+
 /* EDIT PRODUCT */
 if (isset($_POST['submit-edit-product'])) {
   include 'config/connection.php';
@@ -86,6 +106,44 @@ if (isset($_POST['submit-edit-product'])) {
     header('location: templates/finish-operation.php');
   }
 
+  mysqli_close($conn);
+}
+
+/* DELETE PRODUCT */
+if (isset($_GET['delete-product'])) {
+  include 'config/connection.php';
+
+  $idDelete = $_GET['id'];
+
+  $res = mysqli_query($conn, "SELECT * FROM produtos WHERE idproduto = '$idDelete'");
+  $product = mysqli_fetch_assoc($res);
+
+  // Product data
+  $description = $product['descricao'];
+  $stock = $product['estoque'];
+  $value = $product['valor'];
+  $status = $product['status'];
+
+  // User data
+  $userId = $_SESSION['user-id'];
+
+  // Insert into trash bin and delete data
+  $sql = "INSERT INTO lixeira(status, idproduto, descricao, estoque, valor, idusuario) VALUES('$status', '$idDelete', '$description', '$stock', '$value', '$userId')";
+
+  if (mysqli_query($conn, $sql)) {
+    if (mysqli_query($conn, "DELETE FROM produtos WHERE idproduto = '$idDelete' ")) {
+      $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'produtos.php', 'text' => 'Produto excluído com sucesso'];
+      header('location: templates/finish-operation.php');
+    } else {
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'produtos.php', 'text' => 'Houve um problema ao excluir o produto'];
+      header('location: templates/finish-operation.php');
+    }
+  } else {
+    $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'produtos.php', 'text' => 'Houve um problema ao excluir o produto'];
+    header('location: templates/finish-operation.php');
+  }
+
+  mysqli_free_result($res);
   mysqli_close($conn);
 }
 
@@ -386,14 +444,17 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
         </form>
       </section>
       <section class="products">
+        <?php if ($searchResults === 1) { ?>
         <a href="<?php echo $_SERVER['PHP_SELF']; ?>?cart" class="btn btn-info">
           <svg id="cart-logo" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="shopping-cart" class="svg-inline--fa fa-shopping-cart fa-w-18" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="25px" height="25px">
             <path fill="currentColor" d="M528.12 301.319l47.273-208C578.806 78.301 567.391 64 551.99 64H159.208l-9.166-44.81C147.758 8.021 137.93 0 126.529 0H24C10.745 0 0 10.745 0 24v16c0 13.255 10.745 24 24 24h69.883l70.248 343.435C147.325 417.1 136 435.222 136 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-15.674-6.447-29.835-16.824-40h209.647C430.447 426.165 424 440.326 424 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-22.172-12.888-41.332-31.579-50.405l5.517-24.276c3.413-15.018-8.002-29.319-23.403-29.319H218.117l-6.545-32h293.145c11.206 0 20.92-7.754 23.403-18.681z"></path>
           </svg>
           Ver carrinho
         </a>
+        <?php } ?>
         <?php if ($searchResults === 0) { ?>
           <p class="text-center h5 mt-4">Não foram encontrados resultados para sua busca ＞﹏＜</p>
+          <a href="produtos.php?back" class="btn btn-secondary">Voltar</a>
         <?php } else { ?>
           <?php
           $gridCount = 0;
@@ -703,7 +764,54 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
             </div>
           </div>
           <input type="hidden" name="id-editar" value="<?php echo $product['idproduto']; ?>">
-          <button type="submit" name="submit-edit-product" class="btn btn-warning">Editar</button>
+          <div class="buttons">
+            <a href="produtos.php?delete-product&id=<?php echo $product['idproduto']; ?>" class="btn btn-danger">Excluir</a>
+            <button type="submit" name="submit-edit-product" class="btn btn-warning">Editar</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </body>
+
+  </html>
+<?php } else if (isset($_GET['add-product'])) { /* Add product page */ ?>
+  <!DOCTYPE html>
+  <html lang="pt-br">
+
+  <head>
+    <?php include 'templates/head.php'; ?>
+    <link rel="stylesheet" href="styles/pages/produtos.css">
+  </head>
+
+  <body id="add-page">
+    <?php include 'templates/navbar.php'; ?>
+    <?php include 'templates/topbar.php'; ?>
+    <main>
+      <section class="product bg-light border rounded">
+        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="cart-plus" class="svg-inline--fa fa-cart-plus fa-w-18" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+          <path fill="#4B5C6B" d="M504.717 320H211.572l6.545 32h268.418c15.401 0 26.816 14.301 23.403 29.319l-5.517 24.276C523.112 414.668 536 433.828 536 456c0 31.202-25.519 56.444-56.824 55.994-29.823-.429-54.35-24.631-55.155-54.447-.44-16.287 6.085-31.049 16.803-41.548H231.176C241.553 426.165 248 440.326 248 456c0 31.813-26.528 57.431-58.67 55.938-28.54-1.325-51.751-24.385-53.251-52.917-1.158-22.034 10.436-41.455 28.051-51.586L93.883 64H24C10.745 64 0 53.255 0 40V24C0 10.745 10.745 0 24 0h102.529c11.401 0 21.228 8.021 23.513 19.19L159.208 64H551.99c15.401 0 26.816 14.301 23.403 29.319l-47.273 208C525.637 312.246 515.923 320 504.717 320zM408 168h-48v-40c0-8.837-7.163-16-16-16h-16c-8.837 0-16 7.163-16 16v40h-48c-8.837 0-16 7.163-16 16v16c0 8.837 7.163 16 16 16h48v40c0 8.837 7.163 16 16 16h16c8.837 0 16-7.163 16-16v-40h48c8.837 0 16-7.163 16-16v-16c0-8.837-7.163-16-16-16z"></path>
+        </svg>
+        <h2>Adicionar um produto</h2>
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+          <label for="descricao">Descrição</label>
+          <input type="text" name="descricao" id="descricao" class="form-control" placeholder="Descrição" required>
+          <label for="estoque">Estoque</label>
+          <input type="number" name="estoque" id="estoque" class="form-control" placeholder="Estoque" min="0" required>
+          <label for="valor">Valor</label>
+          <input type="number" name="valor" id="valor" class="form-control" placeholder="Valor" step="any" required>
+          <div class="radio-form">
+            <p>Status</p>
+            <div class="option">
+              <input type="radio" name="status" id="ativo" value="A">
+              <label for="ativo">Ativo</label>
+            </div>
+            <div class="option">
+              <input type="radio" name="status" id="inativo" value="I">
+              <label for="inativo">Inativo</label>
+            </div>
+          </div>
+          <input type="hidden" name="id-add">
+          <button type="submit" name="submit-add-product" class="btn btn-success">Adicionar</button>
         </form>
       </section>
     </main>
@@ -806,7 +914,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
             <div class="row">
             <?php } ?>
             <?php if ($gridCount < 4) { ?>
-              <div class="product col-sm <?php if ($product['estoque'] > 0) { echo "border"; } ?> rounded">
+              <div class="product col-sm <?php if ($product['estoque'] > 0 && $product['status'] == "A") { echo "border"; } ?> rounded">
                 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
                   <?php if ($_SESSION['priority'] >= 2) { ?>
                   <a href="produtos.php?edit-product&id=<?php echo $product['idproduto']; ?>" class="edit-product">
@@ -818,7 +926,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
                   <?php } ?>
                   <p class="h6"><?php echo $product['descricao']; ?></p>
                   <p>R$ <?php echo $product['valor']; ?></p>
-                  <?php if ($product['estoque'] > 0) { ?>
+                  <?php if ($product['estoque'] > 0 && $product['status'] == "A") { ?>
                     <button type="submit" name="add-to-cart" class="btn btn-info" 
                       <?php
                       if (!empty($_SESSION['cart'])) {
@@ -866,7 +974,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
               </div>
               <?php $gridCount += 1; ?>
             <?php } else { ?>
-              <div class="product col-sm <?php if ($product['estoque'] > 0) { echo "border"; } ?> rounded">
+              <div class="product col-sm <?php if ($product['estoque'] > 0 && $product['status'] == "A") { echo "border"; } ?> rounded">
               <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
                 <?php if ($_SESSION['priority'] >= 2) { ?>
                   <a href="produtos.php?edit-product&id=<?php echo $product['idproduto']; ?>" class="edit-product">
@@ -878,7 +986,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
                   <?php } ?>
                   <p class="h6"><?php echo $product['descricao']; ?></p>
                   <p>R$ <?php echo $product['valor']; ?></p>
-                  <?php if ($product['estoque'] > 0) { ?>
+                  <?php if ($product['estoque'] > 0 && $product['status'] == "A") { ?>
                     <button type="submit" name="add-to-cart" class="btn btn-info" 
                       <?php
                       if (!empty($_SESSION['cart'])) {
