@@ -115,6 +115,17 @@
   margin: 0 0.4rem;
 }
 
+/* CART - Section for clients */
+#cart .finish.priority-0 {
+  width: 15%;
+  margin-left: 85%;
+}
+
+#cart .finish.priority-0 .total {
+  padding: 0;
+  align-items: center;
+}
+
 /* FINALIZE ORDER PAGE (search) */
 #final-search main {
   padding: 0 0 5% 0;
@@ -131,4 +142,9 @@
 /* FINALIZE ORDER PAGE (list) */
 #final-list main {
   padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }

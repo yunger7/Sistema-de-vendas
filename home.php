@@ -17,6 +17,7 @@ if ($_SESSION['status'] !== "logged") {
   <?php include 'templates/topbar.php'; ?>
   <main>
   <h1>HOME</h1>
+  <?php print_r($_SESSION); ?>
   </main>
 </body>
 
