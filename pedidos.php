@@ -99,17 +99,34 @@ if ($_SESSION['priority'] >= 1) { /* Seller or admin */ ?>
 
                   $sellerId = $order['fk_idvendedor'];
 
-                  $res = mysqli_query($conn, "SELECT nome FROM vendedores JOIN pessoas ON vendedores.fk_idpessoa = pessoas.idpessoa WHERE idvendedor = '$sellerId'");
-                  $sellerName = mysqli_fetch_assoc($res);
+                  $res = mysqli_query($conn, "SELECT nome, idvendedor FROM vendedores JOIN pessoas ON vendedores.fk_idpessoa = pessoas.idpessoa WHERE idvendedor = '$sellerId'");
+                  $seller = mysqli_fetch_assoc($res);
 
                   mysqli_free_result($res);
                   mysqli_close($conn);
                   ?>
-                  <td><?php echo $sellerName['nome']; ?></td>
+                  <td><?php echo $seller['nome']; ?></td>
                   <td>
                     <a href="pedidos.php?view-order&id=<?php echo $order['idpedido']; ?>" class="btn btn-outline-success">Detalhes</a>
-                    <a href="pedidos.php?edit-order&id=<?php echo $order['idpedido']; ?>" class="btn btn-outline-warning">Editar</a>
-                    <a href="pedidos.php?delete-order&id=<?php echo $order['idpedido']; ?>" class="btn btn-outline-danger">Excluir</a>
+                    <?php if ($_SESSION['type'] == "admin") { ?>
+                      <a href="pedidos.php?edit-order&id=<?php echo $order['idpedido']; ?>" class="btn btn-outline-warning">Editar</a>
+                      <a href="pedidos.php?delete-order&id=<?php echo $order['idpedido']; ?>" class="btn btn-outline-danger">Excluir</a>
+                      <?php } else {
+                      include 'config/connection.php';
+
+                      $orderId = $order['idpedido'];
+                      $userId = $_SESSION['user-id'];
+
+                      $res = mysqli_query($conn, "SELECT idpedido FROM pedidos WHERE fk_idvendedor = (SELECT idvendedor FROM vendedores WHERE fk_idpessoa = '$userId') AND idpedido = '$orderId' ");
+
+                      if (mysqli_num_rows($res) > 0) { ?>
+                        <a href="pedidos.php?edit-order&id=<?php echo $order['idpedido']; ?>" class="btn btn-outline-warning">Editar</a>
+                        <a href="pedidos.php?delete-order&id=<?php echo $order['idpedido']; ?>" class="btn btn-outline-danger">Excluir</a>
+                    <?php
+                      }
+                      mysqli_close($conn);
+                    }
+                    ?>
                   </td>
                 </tr>
               <?php } ?>
