@@ -6,6 +6,7 @@
   width: 100vw;
   height: 5vh;
   padding: 0 20px;
+  padding-left: 15px;
 
   display: flex;
   justify-content: space-between;
@@ -31,8 +32,17 @@
   align-items: center;
 }
 
+#topbar #left-logo a {
+  display: flex;
+  align-items: center;
+}
+
 #topbar svg {
   color: #72B7C1;
+}
+
+#topbar svg#cart-logo {
+  margin-right: 0.4rem;
 }
 
 #topbar #cart {
