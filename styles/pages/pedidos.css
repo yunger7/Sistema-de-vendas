@@ -18,3 +18,62 @@
 #search input.btn-link {
   padding: 0.4rem;
 }
+
+/* VIEW ORDER PAGE */
+#view-order {
+  overflow: hidden;
+}
+
+#view-order h2 {
+  text-align: center;
+}
+
+#view-order main {
+  padding-top: 3rem;
+
+  display: flex;
+  justify-content: space-around;
+}
+
+#view-order main svg {
+  color: #4B5C6B;
+}
+
+#view-order .data-box {
+  width: 100%;
+  margin: 2rem 0;
+  padding: 0 5%;
+}
+
+#view-order .data-box .data {
+  margin: 0.3rem 0;
+
+  display: flex;
+  justify-content: space-between;
+}
+
+#view-order .data-box .data p {
+  display: inline-block;
+}
+
+#view-order .order {
+  width: 30%;
+  height: 80%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#view-order .order #order-icon {
+  width: 4rem;
+  height: 4rem;
+  position: relative;
+  bottom: 25px;
+}
+
+#view-order .products {
+  width: 60%;
+}
+
+

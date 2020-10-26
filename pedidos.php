@@ -5,8 +5,145 @@ if ($_SESSION['status'] !== "logged") {
   header('location: index.php');
 }
 
-/* CHECK USER PRIORITY */
-if ($_SESSION['priority'] >= 1) { /* Seller or admin */ ?>
+/* VIEW ORDER */
+
+
+if (isset($_GET['view-order'])) { /* View order page */ ?>
+  <?php
+  $id = $_GET['id'];
+
+  include 'config/connection.php';
+
+  $res = mysqli_query($conn, "SELECT * FROM pedidos WHERE idpedido = '$id'");
+  $order = mysqli_fetch_assoc($res);
+
+  mysqli_free_result($res);
+  mysqli_close($conn);
+  ?>
+  <!DOCTYPE html>
+  <html lang="pt-br">
+  <head>
+    <?php include 'templates/head.php'; ?>
+    <link rel="stylesheet" href="styles/pages/pedidos.css">
+  </head>
+  <body id="view-order">
+    <?php include 'templates/navbar.php'; ?>
+    <?php include 'templates/topbar.php'; ?>
+    <main>
+      <section class="order bg-light border rounded">
+        <svg width="1em" height="1em" viewBox="0 0 16 16" id="order-icon" class="bi bi-archive-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15h9.286zM5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8H.8z"/>
+        </svg>
+        <h2>Pedido nº <?php echo $order['idpedido']; ?></h2>
+        <div class="data-box">
+          <div class="date data">
+            <div class="label">
+              <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar-week" fill="#currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
+              </svg>
+              <p>Data</p>
+            </div>
+            <span><?php echo $order['data']; ?></span>
+          </div>
+          <div class="value data">
+            <div class="label">
+              <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-cash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M15 4H1v8h14V4zM1 3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H1z"/>
+                <path d="M13 4a2 2 0 0 0 2 2V4h-2zM3 4a2 2 0 0 1-2 2V4h2zm10 8a2 2 0 0 1 2-2v2h-2zM3 12a2 2 0 0 0-2-2v2h2zm7-4a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
+              </svg>
+              <p>Valor</p>
+            </div>
+            <span>R$ <?php echo $order['valor'] ?></span>
+          </div>
+          <div class="status data">
+            <div class="label">
+              <svg svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M15.354 2.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L8 9.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                <path fill-rule="evenodd" d="M1.5 13A1.5 1.5 0 0 0 3 14.5h10a1.5 1.5 0 0 0 1.5-1.5V8a.5.5 0 0 0-1 0v5a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5h8a.5.5 0 0 0 0-1H3A1.5 1.5 0 0 0 1.5 3v10z"/>
+              </svg>
+              <p>Status</p>
+            </div>
+            <span><?php echo $order['status']; ?></span>
+          </div>
+          <div class="client data">
+            <?php
+            include 'config/connection.php';
+
+            $res = mysqli_query($conn, "SELECT pessoas.nome FROM pedidos JOIN clientes on pedidos.fk_idcliente = clientes.idcliente JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa WHERE pedidos.idpedido = '$id'");
+
+            $clientName = mysqli_fetch_assoc($res);
+
+            mysqli_free_result($res);
+            mysqli_close($conn);
+            ?>
+            <div class="label">
+              <svg width="1em" height="1em" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user-circle" class="svg-inline--fa fa-user-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512">
+                <path fill="currentColor" d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"></path>
+              </svg>
+              <p>Cliente</p>
+            </div>
+            <span><?php echo $clientName['nome']; ?></span>
+          </div>
+          <div class="seller data">
+            <?php
+              include 'config/connection.php';
+
+              $res = mysqli_query($conn, "SELECT pessoas.nome FROM pedidos JOIN vendedores on pedidos.fk_idvendedor = vendedores.idvendedor JOIN pessoas ON vendedores.fk_idpessoa = pessoas.idpessoa WHERE pedidos.idpedido = '$id'");
+
+              $sellerName = mysqli_fetch_assoc($res);
+
+              mysqli_free_result($res);
+              mysqli_close($conn);
+              ?>
+            <div class="label">
+              <svg width="1em" height="1em" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user-tie" class="svg-inline--fa fa-user-tie fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <path fill="currentColor" d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm95.8 32.6L272 480l-32-136 32-56h-96l32 56-32 136-47.8-191.4C56.9 292 0 350.3 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-72.1-56.9-130.4-128.2-133.8z"></path>
+              </svg>
+              <p>Vendedor</p>
+            </div>
+            <span><?php echo $sellerName['nome']; ?></span>
+          </div>
+        </div>
+      </section>
+      <section class="products">
+        <h2>Produtos</h2>
+        <table class="table table-hover border text-center">
+            <thead>
+              <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Quantidade</th>
+                <th scope="col">Valor do produto</th>
+                <th scope="col">Valor no pedido</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+              include 'config/connection.php';
+
+              $res = mysqli_query($conn, "SELECT descricao, produtos.valor AS valor_produto, qtd, itens_pedidos.valor AS valor_venda FROM itens_pedidos JOIN produtos ON itens_pedidos.fk_idproduto = produtos.idproduto WHERE fk_idpedido = '$id'
+              ");
+              $productList = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+              mysqli_free_result($res);
+              mysqli_close($conn);
+              ?>
+              <?php foreach ($productList as $product) { ?>
+                <tr>
+                  <td><?php echo $product['descricao']; ?></td>
+                  <td><?php echo $product['qtd']; ?></td>
+                  <td><?php echo $product['valor_produto']; ?></td>
+                  <td><?php echo $product['valor_venda']; ?></td>
+                </tr>
+              <?php } ?>
+            </tbody>
+          </table>
+      </section>
+    </main>
+  </body>
+  </html>
+<?php } else { ?>
+<?php if ($_SESSION['priority'] >= 1) { /* Search and results (Seller or admin) */ ?>
   <?php
   /* SEND PAGES */
   if (isset($_GET['name-id']) || isset($_GET['letter'])) { /* Search result page */ ?>
@@ -191,7 +328,7 @@ if ($_SESSION['priority'] >= 1) { /* Seller or admin */ ?>
 
     </html>
   <?php } ?>
-<?php } else { /* Client */ ?>
+<?php } else if ($_SESSION['priority'] == 0 ) { /* Results (Client) */ ?>
   <?php
   include 'config/connection.php';
 
@@ -265,4 +402,5 @@ if ($_SESSION['priority'] >= 1) { /* Seller or admin */ ?>
   </body>
 
   </html>
+<?php } ?>
 <?php } ?>
