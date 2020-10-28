@@ -120,7 +120,7 @@ if (isset($_GET['delete-client'])) {
     }
   } else {
     $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'clientes.php', 'text' => 'Houve um problema ao excluir o cliente'];
-    header('location: templates/finish-operation.php');;
+    header('location: templates/finish-operation.php');
   }
 
   mysqli_close($conn);
