@@ -21,7 +21,7 @@ if (isset($_POST['submit-login'])) {
     $vendedor = mysqli_query($conn, "SELECT * FROM vendedores WHERE fk_idpessoa = '$userId'");
     $cliente = mysqli_query($conn, "SELECT * FROM clientes WHERE fk_idpessoa = '$userId'");
 
-    if ($user['nome'] === "admin" and $user['senha'] === "YWRtaW4=") {
+    if ($user['nome'] === "Admin" and $user['senha'] === "YWRtaW4=") {
       $_SESSION['type'] = "admin";
       $_SESSION['priority'] = 2;
     } else if (mysqli_num_rows($vendedor) > 0) {

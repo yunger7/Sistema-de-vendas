@@ -85,6 +85,14 @@
 }
 
 /* EDIT ORDER PAGE */
+.edit-order .order form {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .edit-order input, .edit-order select {
   max-width: 12rem;
@@ -113,4 +121,21 @@ form input[type='number'] {
 
 .edit-order button[type="submit"] {
   width: 40%;
+}
+
+.edit-order .products select {
+  width: 10em;
+  text-align-last: center;
+}
+
+.edit-order .products input {
+  text-align: center;
+}
+
+.edit-order .products input::placeholder {
+  text-align: center;
+}
+
+.edit-order .products button[type="submit"] {
+  width: 100%;
 }

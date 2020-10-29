@@ -94,7 +94,7 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
         <div class="data-box">
           <div class="date data">
             <div class="label">
-              <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar-week" fill="#currentColor" xmlns="http://www.w3.org/2000/svg">
+              <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar-week" fill="#4B5C6B" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
                 <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
               </svg>
@@ -201,7 +201,86 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
 <?php } else if (isset($_GET['edit-order'])) { /* Edit order page */ ?>
   <?php
   $id = $_GET['id'];
+  $error = 0;
 
+  /* CHANGE PRODUCT VALUE */
+  if (isset($_POST['product-id'])) {
+    $optionId = $_POST['product-id'];
+
+    include 'config/connection.php';
+
+    $res = mysqli_query($conn, "SELECT valor FROM produtos WHERE idproduto = '$optionId'");
+    $productValue = mysqli_fetch_assoc($res);
+
+    mysqli_close($conn);
+  }
+
+  /* CHANGE IN-ORDER PRODUCT VALUE */
+  if (isset($_POST['quantity'])) {
+    $quantity = $_POST['quantity'];
+
+    if (isset($_POST['product-id'])) {
+      // Option is selected
+      include 'config/connection.php';
+
+      $res = mysqli_query($conn, "SELECT valor FROM produtos WHERE idproduto = '$optionId'");
+      $productValue = mysqli_fetch_assoc($res);
+
+      if ($quantity == 1) {
+        $inOrderValue = $productValue['valor'];
+      } else if ($quantity > 1) {
+        $inOrderValue = $productValue['valor'] * $quantity;
+      }
+
+      mysqli_close($conn);
+    }
+  }
+
+  /* ADD PRODUCT */
+  if (isset($_POST['submit-add-product'])) {
+    include 'config/connection.php';
+
+    $productId = $_POST['product-id'];
+    $quantity = $_POST['quantity'];
+    $inOrderValue = $_POST['in-order-value'];
+
+    $res = mysqli_query($conn, "SELECT idproduto FROM itens_pedidos JOIN produtos ON itens_pedidos.fk_idproduto = produtos.idproduto WHERE fk_idpedido = '$id'");
+    $addedProducts = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+    // Check if product is already added
+    $error = 0;
+    foreach ($addedProducts as $addedProduct) {
+      if ($addedProduct['idproduto'] == $productId) {
+        $error = 1;
+        break;
+      }
+    }
+
+    // Add item to order
+    if ($error === 0) {
+      echo "no errors";
+      mysqli_query($conn, "INSERT INTO itens_pedidos(fk_idpedido, fk_idproduto, qtd, valor) VALUES('$id', '$productId', '$quantity', '$inOrderValue')");
+    }
+
+    mysqli_close($conn);
+  }
+
+  /* REMOVE PRODUCT */
+  if (isset($_GET['remove-item'])) {
+    $productId = $_GET['product-id'];
+    include 'config/connection.php';
+
+    $res = mysqli_query($conn, "SELECT * FROM itens_pedidos WHERE fk_idpedido = '$id' AND fk_idproduto = '$productId'");
+
+    if (mysqli_num_rows($res) > 0) {
+      // Product is added
+      mysqli_query($conn, "DELETE FROM itens_pedidos WHERE fk_idpedido = '$id' AND fk_idproduto = '$productId'");
+    }
+
+    mysqli_close($conn);
+  }
+
+  /* GET RECORDS FROM DATABASE */
   include 'config/connection.php';
 
   $res = mysqli_query($conn, "SELECT * FROM pedidos WHERE idpedido = '$id'");
@@ -221,117 +300,121 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
     <?php include 'templates/topbar.php'; ?>
     <main>
       <section class="order bg-light border rounded">
-        <svg viewBox="0 0 16 16" class="bi bi-pencil-fill top-icon" fill="#4B5C6B" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
-        </svg>
-        <h2>Pedido nº <?php echo $order['idpedido']; ?></h2>
-        <div class="data-box">
-          <div class="date data">
-            <div class="label">
-              <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar-week" fill="#currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
-                <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
-              </svg>
-              <p>Data</p>
-            </div>
-            <input type="datetime" name="date" value="<?php echo $order['data']; ?>" class="form-control">
-          </div>
-          <div class="value data">
-            <div class="label">
-              <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-cash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" d="M15 4H1v8h14V4zM1 3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H1z"/>
-                <path d="M13 4a2 2 0 0 0 2 2V4h-2zM3 4a2 2 0 0 1-2 2V4h2zm10 8a2 2 0 0 1 2-2v2h-2zM3 12a2 2 0 0 0-2-2v2h2zm7-4a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
-              </svg>
-              <p>Valor</p>
-            </div>
-            <input type="number" name="value" value="<?php echo $order['valor'] ?>" class="form-control">
-          </div>
-          <div class="status data">
-            <div class="label">
-              <svg svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" d="M15.354 2.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L8 9.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-                <path fill-rule="evenodd" d="M1.5 13A1.5 1.5 0 0 0 3 14.5h10a1.5 1.5 0 0 0 1.5-1.5V8a.5.5 0 0 0-1 0v5a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5h8a.5.5 0 0 0 0-1H3A1.5 1.5 0 0 0 1.5 3v10z"/>
-              </svg>
-              <p>Status</p>
-            </div>
-              <div class="radio-form">
-                <div class="option">
-                  <input type="radio" name="status" id="ativo" value="A" <?php if ($order['status'] == "A") { echo "checked"; } ?>>
-                  <label for="ativo">Ativo</label>
-                </div>
-                <div class="option">
-                  <input type="radio" name="status" id="inativo" value="I" <?php if ($order['status'] == "I") { echo "checked"; } ?>>
-                  <label for="inativo">Inativo</label>
-                </div>
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+          <svg viewBox="0 0 16 16" class="bi bi-pencil-fill top-icon" fill="#4B5C6B" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
+          </svg>
+          <h2>Pedido nº <?php echo $order['idpedido']; ?></h2>
+          <div class="data-box">
+            <div class="date data">
+              <div class="label">
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar-week" fill="#currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                  <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
+                </svg>
+                <p>Data</p>
               </div>
-          </div>
-          <div class="client data">
-            <?php
-            include 'config/connection.php';
-
-            $res = mysqli_query($conn, "SELECT idpessoa FROM pedidos JOIN clientes on pedidos.fk_idcliente = clientes.idcliente JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa WHERE pedidos.idpedido = '$id'");
-            $defaultClientId = mysqli_fetch_assoc($res);
-
-            $res = mysqli_query($conn, "SELECT nome, idpessoa FROM clientes JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa");
-            $clients = mysqli_fetch_all($res, MYSQLI_ASSOC);
-
-            mysqli_free_result($res);
-            mysqli_close($conn);
-            ?>
-            <div class="label">
-              <svg width="1em" height="1em" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user-circle" class="svg-inline--fa fa-user-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512">
-                <path fill="currentColor" d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"></path>
-              </svg>
-              <p>Cliente</p>
+              <input type="datetime" name="date" value="<?php echo $order['data']; ?>" class="form-control">
             </div>
-            <select name="client" class="form-control">
-              <?php foreach($clients as $client) { ?>
-                <?php if ($client['idpessoa'] == $defaultClientId['idpessoa']) { ?>
-                  <option value="<?php echo $client['idpessoa'] ?>" selected><?php echo $client['nome']; ?></option>
-                <?php } else { ?>
-                <option value="<?php echo $client['idpessoa']; ?>"><?php echo $client['nome']; ?></option>
-                <?php } ?>
-              <?php } ?>
-            </select>
-          </div>
-          <div class="seller data">
-            <?php
+            <div class="value data">
+              <div class="label">
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-cash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M15 4H1v8h14V4zM1 3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H1z"/>
+                  <path d="M13 4a2 2 0 0 0 2 2V4h-2zM3 4a2 2 0 0 1-2 2V4h2zm10 8a2 2 0 0 1 2-2v2h-2zM3 12a2 2 0 0 0-2-2v2h2zm7-4a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
+                </svg>
+                <p>Valor</p>
+              </div>
+              <input type="number" name="value" value="<?php echo $order['valor'] ?>" class="form-control">
+            </div>
+            <div class="status data">
+              <div class="label">
+                <svg svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M15.354 2.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L8 9.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                  <path fill-rule="evenodd" d="M1.5 13A1.5 1.5 0 0 0 3 14.5h10a1.5 1.5 0 0 0 1.5-1.5V8a.5.5 0 0 0-1 0v5a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5h8a.5.5 0 0 0 0-1H3A1.5 1.5 0 0 0 1.5 3v10z"/>
+                </svg>
+                <p>Status</p>
+              </div>
+                <div class="radio-form">
+                  <div class="option">
+                    <input type="radio" name="status" id="ativo" value="A" <?php if ($order['status'] == "A") { echo "checked"; } ?>>
+                    <label for="ativo">Ativo</label>
+                  </div>
+                  <div class="option">
+                    <input type="radio" name="status" id="inativo" value="I" <?php if ($order['status'] == "I") { echo "checked"; } ?>>
+                    <label for="inativo">Inativo</label>
+                  </div>
+                </div>
+            </div>
+            <div class="client data">
+              <?php
               include 'config/connection.php';
 
-              $res = mysqli_query($conn, "SELECT pessoas.nome FROM pedidos JOIN vendedores on pedidos.fk_idvendedor = vendedores.idvendedor JOIN pessoas ON vendedores.fk_idpessoa = pessoas.idpessoa WHERE pedidos.idpedido = '$id'");
+              $res = mysqli_query($conn, "SELECT idpessoa FROM pedidos JOIN clientes on pedidos.fk_idcliente = clientes.idcliente JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa WHERE pedidos.idpedido = '$id'");
+              $defaultClientId = mysqli_fetch_assoc($res);
 
-              $sellerName = mysqli_fetch_assoc($res);
+              $res = mysqli_query($conn, "SELECT nome, idpessoa FROM clientes JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa");
+              $clients = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
               mysqli_free_result($res);
               mysqli_close($conn);
               ?>
-            <div class="label">
-              <svg width="1em" height="1em" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user-tie" class="svg-inline--fa fa-user-tie fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                <path fill="currentColor" d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm95.8 32.6L272 480l-32-136 32-56h-96l32 56-32 136-47.8-191.4C56.9 292 0 350.3 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-72.1-56.9-130.4-128.2-133.8z"></path>
-              </svg>
-              <p>Vendedor</p>
+              <div class="label">
+                <svg width="1em" height="1em" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user-circle" class="svg-inline--fa fa-user-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512">
+                  <path fill="currentColor" d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"></path>
+                </svg>
+                <p>Cliente</p>
+              </div>
+              <select name="client" class="form-control">
+                <?php foreach($clients as $client) { ?>
+                  <?php if ($client['idpessoa'] == $defaultClientId['idpessoa']) { ?>
+                    <option value="<?php echo $client['idpessoa'] ?>" selected><?php echo $client['nome']; ?></option>
+                  <?php } else { ?>
+                  <option value="<?php echo $client['idpessoa']; ?>"><?php echo $client['nome']; ?></option>
+                  <?php } ?>
+                <?php } ?>
+              </select>
             </div>
-            <span><?php echo $sellerName['nome']; ?></span>
+            <div class="seller data">
+              <?php
+                include 'config/connection.php';
+
+                $res = mysqli_query($conn, "SELECT pessoas.nome FROM pedidos JOIN vendedores on pedidos.fk_idvendedor = vendedores.idvendedor JOIN pessoas ON vendedores.fk_idpessoa = pessoas.idpessoa WHERE pedidos.idpedido = '$id'");
+
+                $sellerName = mysqli_fetch_assoc($res);
+
+                mysqli_free_result($res);
+                mysqli_close($conn);
+                ?>
+              <div class="label">
+                <svg width="1em" height="1em" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user-tie" class="svg-inline--fa fa-user-tie fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                  <path fill="currentColor" d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm95.8 32.6L272 480l-32-136 32-56h-96l32 56-32 136-47.8-191.4C56.9 292 0 350.3 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-72.1-56.9-130.4-128.2-133.8z"></path>
+                </svg>
+                <p>Vendedor</p>
+              </div>
+              <span><?php echo $sellerName['nome']; ?></span>
+            </div>
           </div>
-        </div>
-        <button type="submit" name="submit-edit-order" class="btn btn-warning">Editar</button>
+          <button type="submit" name="submit-edit-order" class="btn btn-warning">Editar</button>
+        </form>
       </section>
       <section class="products">
         <h2>Produtos</h2>
         <table class="table table-hover border text-center">
             <thead>
               <tr>
+                <th></th>
                 <th scope="col">Nome</th>
                 <th scope="col">Quantidade</th>
                 <th scope="col">Valor do produto</th>
                 <th scope="col">Valor no pedido</th>
+                <th>Opções</th>
               </tr>
             </thead>
             <tbody>
               <?php
               include 'config/connection.php';
 
-              $res = mysqli_query($conn, "SELECT descricao, produtos.valor AS valor_produto, qtd, itens_pedidos.valor AS valor_venda FROM itens_pedidos JOIN produtos ON itens_pedidos.fk_idproduto = produtos.idproduto WHERE fk_idpedido = '$id'
+              $res = mysqli_query($conn, "SELECT idproduto, descricao, produtos.valor AS valor_produto, qtd, itens_pedidos.valor AS valor_venda FROM itens_pedidos JOIN produtos ON itens_pedidos.fk_idproduto = produtos.idproduto WHERE fk_idpedido = '$id'
               ");
               $productList = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
@@ -340,11 +423,48 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
               ?>
               <?php foreach ($productList as $product) { ?>
                 <tr>
+                  <td><a href="<?php echo $_SERVER['PHP_SELF']; ?>?edit-order&id=<?php echo $id; ?>&remove-item&product-id=<?php echo $product['idproduto']; ?>" class="btn btn-danger">X</a></td>
                   <td><?php echo $product['descricao']; ?></td>
                   <td><?php echo $product['qtd']; ?></td>
-                  <td><?php echo $product['valor_produto']; ?></td>
-                  <td><?php echo $product['valor_venda']; ?></td>
+                  <td>R$ <?php echo $product['valor_produto']; ?></td>
+                  <td>R$ <?php echo $product['valor_venda']; ?></td>
+                  <td></td>
                 </tr>
+              <?php } ?>
+              <tr class="add-product">
+                <form action="<?php echo $_SERVER['PHP_SELF']; ?>?edit-order&id=<?php echo $id; ?>" method="POST">
+                  <td></td>
+                  <td>
+                    <select name="product-id" class="form-control" onchange="this.form.submit()" required>
+                      <option value="" disabled selected>Selecionar</option>
+                      <?php
+                      include 'config/connection.php';
+
+                      $res = mysqli_query($conn, "SELECT idproduto, descricao FROM produtos");
+                      $products = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+                      mysqli_free_result($res);
+                      mysqli_close($conn);
+                      ?>
+                      <?php foreach ($products as $product) { ?>
+                        <?php if ($product['idproduto'] == $optionId) { ?>
+                          <option value="<?php echo $product['idproduto']; ?>" selected><?php echo $product['descricao']; ?></option>
+                        <?php } else { ?>
+                          <option value="<?php echo $product['idproduto']; ?>"><?php echo $product['descricao']; ?></option>
+                        <?php } ?>
+                      <?php } ?>
+                    </select>
+                  </td>
+                  <td><input type="number" name="quantity" min="1" class="form-control" <?php if (isset($quantity)) { echo "value='" . $quantity . "'"; } ?> onchange="this.form.submit()" placeholder="1" required></td>
+                  <td><input type="number" name="product-value" value="<?php if (isset($productValue)) { echo $productValue['valor']; } ?>" class="form-control" placeholder="R$ 0,00" disabled required></td>
+                  <td><input type="number" name="in-order-value" class="form-control" <?php if (isset($inOrderValue)) { echo "value='" . $inOrderValue . "'"; } ?> step="any" placeholder="R$ 0,00" required></td>
+                  <td><button type="submit" name="submit-add-product" class="btn btn-outline-info">Adicionar</button></td>
+                </form>
+              </tr>
+              <?php if ($error == 1) { ?>
+                <div class="alert alert-danger" role="alert">
+                  Esse produto já foi cadastrado
+                </div>
               <?php } ?>
             </tbody>
           </table>
