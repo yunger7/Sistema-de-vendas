@@ -562,7 +562,7 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
       <link rel="stylesheet" href="styles/pages/pedidos.css">
     </head>
 
-    <body id="search-result">
+    <body class="search-result">
       <?php include 'templates/navbar.php'; ?>
       <?php include 'templates/topbar.php'; ?>
       <main>
