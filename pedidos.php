@@ -203,6 +203,27 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
   $id = $_GET['id'];
   $error = 0;
 
+  /* EDIT ORDER DETAILS */
+  if (isset($_POST['submit-edit-order'])) {
+    include 'config/connection.php';
+
+    $date = $_POST['date'];
+    $status = $_POST['status'];
+    $clientId = $_POST['client'];
+
+    if (mysqli_query($conn, "UPDATE pedidos SET data = '$date', status = '$status', fk_idcliente = '$clientId' WHERE idpedido = '$id'")) {
+      $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'pedidos.php', 'text' => 'Pedido editado com sucesso'];
+      header('location: templates/finish-operation.php');
+    } else {
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'pedidos.php', 'text' => 'Houve um problema ao editar o pedido'];
+      header('location: templates/finish-operation.php');
+
+      echo mysqli_error($conn);
+    }
+
+    mysqli_close($conn);
+  }
+
   /* CHANGE PRODUCT VALUE */
   if (isset($_POST['product-id'])) {
     $optionId = $_POST['product-id'];
@@ -258,9 +279,19 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
 
     // Add item to order
     if ($error === 0) {
-      echo "no errors";
       mysqli_query($conn, "INSERT INTO itens_pedidos(fk_idpedido, fk_idproduto, qtd, valor) VALUES('$id', '$productId', '$quantity', '$inOrderValue')");
     }
+
+    // Calculate and change new order price
+    $res = mysqli_query($conn, "SELECT valor FROM itens_pedidos WHERE fk_idpedido = '$id'");
+    $orderValueList = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+    $sum = 0;
+    foreach ($orderValueList as $item) {
+      $sum += $item['valor'];
+    }
+
+    mysqli_query($conn, "UPDATE pedidos SET valor = '$sum' WHERE idpedido = '$id'");
 
     mysqli_close($conn);
   }
@@ -276,6 +307,17 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
       // Product is added
       mysqli_query($conn, "DELETE FROM itens_pedidos WHERE fk_idpedido = '$id' AND fk_idproduto = '$productId'");
     }
+
+    // Calculate and change new order price
+    $res = mysqli_query($conn, "SELECT valor FROM itens_pedidos WHERE fk_idpedido = '$id'");
+    $orderValueList = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+    $sum = 0;
+    foreach ($orderValueList as $item) {
+      $sum += $item['valor'];
+    }
+
+    mysqli_query($conn, "UPDATE pedidos SET valor = '$sum' WHERE idpedido = '$id'");
 
     mysqli_close($conn);
   }
@@ -300,7 +342,7 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
     <?php include 'templates/topbar.php'; ?>
     <main>
       <section class="order bg-light border rounded">
-        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>?edit-order&id=<?php echo $id; ?>" method="POST">
           <svg viewBox="0 0 16 16" class="bi bi-pencil-fill top-icon" fill="#4B5C6B" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
           </svg>
@@ -324,7 +366,7 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
                 </svg>
                 <p>Valor</p>
               </div>
-              <input type="number" name="value" value="<?php echo $order['valor'] ?>" class="form-control">
+              <input type="number" name="value" value="<?php echo $order['valor'] ?>" class="form-control" disabled>
             </div>
             <div class="status data">
               <div class="label">
@@ -349,10 +391,10 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
               <?php
               include 'config/connection.php';
 
-              $res = mysqli_query($conn, "SELECT idpessoa FROM pedidos JOIN clientes on pedidos.fk_idcliente = clientes.idcliente JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa WHERE pedidos.idpedido = '$id'");
+              $res = mysqli_query($conn, "SELECT idcliente FROM pedidos JOIN clientes on pedidos.fk_idcliente = clientes.idcliente WHERE pedidos.idpedido = '$id'");
               $defaultClientId = mysqli_fetch_assoc($res);
 
-              $res = mysqli_query($conn, "SELECT nome, idpessoa FROM clientes JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa");
+              $res = mysqli_query($conn, "SELECT nome, idcliente FROM clientes JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa");
               $clients = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
               mysqli_free_result($res);
@@ -366,10 +408,10 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
               </div>
               <select name="client" class="form-control">
                 <?php foreach($clients as $client) { ?>
-                  <?php if ($client['idpessoa'] == $defaultClientId['idpessoa']) { ?>
-                    <option value="<?php echo $client['idpessoa'] ?>" selected><?php echo $client['nome']; ?></option>
+                  <?php if ($client['idcliente'] == $defaultClientId['idcliente']) { ?>
+                    <option value="<?php echo $client['idcliente'] ?>" selected><?php echo $client['nome']; ?></option>
                   <?php } else { ?>
-                  <option value="<?php echo $client['idpessoa']; ?>"><?php echo $client['nome']; ?></option>
+                  <option value="<?php echo $client['idcliente']; ?>"><?php echo $client['nome']; ?></option>
                   <?php } ?>
                 <?php } ?>
               </select>
