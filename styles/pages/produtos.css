@@ -58,6 +58,10 @@ main {
 }
 
 /* CART PAGE */
+#cart {
+  overflow-x: hidden;
+}
+
 #cart main {
   padding: 0 !important;
   

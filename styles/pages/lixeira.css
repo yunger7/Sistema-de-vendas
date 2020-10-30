@@ -51,3 +51,29 @@
   display: flex;
   justify-content: space-around;
 }
+
+/* TRASH PAGE */
+.trash-page {
+  overflow-x: hidden;
+}
+
+.trash-page main {
+  height: 100%;
+  margin: 0 0 0 80px;
+  padding-top: 5vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.trash-page table .buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.trash-page table form {
+  display: inline-block;
+  margin: 0 0.5rem;
+}
