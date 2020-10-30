@@ -171,17 +171,63 @@ if (isset($_GET['products'])) { /* Products page */ ?>
     header('location: home.php');
   }
 
+  /* RESTORE ORDER */
+  if (isset($_POST['submit-restore-order'])) {
+    include 'config/connection.php';
+
+    $id = $_POST['id'];
+    $orderId = $_POST['idpedido'];
+    $date = $_POST['data'];
+    $value = $_POST['valor'];
+    $status = $_POST['status'];
+    $sellerId = $_POST['idvendedor'];
+    $clientId = $_POST['idcliente'];
+
+    if (mysqli_query($conn, "INSERT INTO pedidos (idpedido, data, valor, status, fk_idvendedor, fk_idcliente) VALUES ('$orderId', '$date', '$value', '$status', '$sellerId', '$clientId')")) {
+      if (mysqli_query($conn, "DELETE FROM lixeira WHERE id = '$id'")) {
+        $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'lixeira.php?orders', 'text' => 'Pedido restaurado com sucesso'];
+        header('location: templates/finish-operation.php');
+      } else {
+        $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'lixeira.php?orders', 'text' => 'Houve um problema ao restaurar o pedido'];
+        header('location: templates/finish-operation.php');
+      }
+    } else {
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'lixeira.php?orders', 'text' => 'Houve um problema ao restaurar o pedido'];
+      header('location: templates/finish-operation.php');
+    }
+
+    mysqli_close($conn);
+  }
+
+  /* DELETE ORDER PERMANENTLY */
+  if (isset($_POST['submit-delete-order'])) {
+    include 'config/connection.php';
+
+    $id = $_POST['id'];
+
+    if (mysqli_query($conn, "DELETE FROM lixeira WHERE id = '$id'")) {
+      $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'lixeira.php?orders', 'text' => 'Pedido excluído com sucesso'];
+      header('location: templates/finish-operation.php');
+    } else {
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'lixeira.php?orders', 'text' => 'Houve um problema ao excluir o pedido'];
+      header('location: templates/finish-operation.php');
+    }
+
+    mysqli_close($conn);
+  }
+
+  /* GET DATA FROM DATABASE */
   include 'config/connection.php';
 
   if ($_SESSION['type'] == "admin") {
-    $sql = "SELECT idpedido, data, valor, status, idvendedor, idcliente, data_exclusao, idusuario FROM lixeira WHERE idpedido IS NOT NULL AND data IS NOT NULL AND valor IS NOT NULL AND status IS NOT NULL AND idvendedor IS NOT NULL AND idcliente IS NOT NULL";
+    $sql = "SELECT id, idpedido, data, valor, status, idvendedor, idcliente, data_exclusao, idusuario FROM lixeira WHERE idpedido IS NOT NULL AND data IS NOT NULL AND valor IS NOT NULL AND status IS NOT NULL AND idvendedor IS NOT NULL AND idcliente IS NOT NULL";
   } else if ($_SESSION['type'] == "vendedor") {
     // Get seller id
     $userId = $_SESSION['user-id'];
     $res = mysqli_query($conn, "SELECT idvendedor FROM vendedores WHERE fk_idpessoa = '$userId'");
     $sellerId = mysqli_fetch_assoc($res);
 
-    $sql = "SELECT idpedido, data, valor, status, idvendedor, idcliente, data_exclusao, idusuario FROM lixeira WHERE idvendedor = '$userId' AND idpedido IS NOT NULL AND data IS NOT NULL AND valor IS NOT NULL AND status IS NOT NULL AND idvendedor IS NOT NULL AND idcliente IS NOT NULL";
+    $sql = "SELECT id, idpedido, data, valor, status, idvendedor, idcliente, data_exclusao, idusuario FROM lixeira WHERE idvendedor = '$userId' AND idpedido IS NOT NULL AND data IS NOT NULL AND valor IS NOT NULL AND status IS NOT NULL AND idvendedor IS NOT NULL AND idcliente IS NOT NULL";
   }
 
   $res = mysqli_query($conn, $sql);
@@ -293,6 +339,7 @@ if (isset($_GET['products'])) { /* Products page */ ?>
               <td class="buttons">
                 <form action="<?php echo $_SERVER['PHP_SELF']; ?>?orders" method="POST">
                   <input type="hidden" name="id" value="<?php echo $order['id']; ?>">
+                  <input type="hidden" name="idpedido" value="<?php echo $order['idpedido']; ?>">
                   <input type="hidden" name="data" value="<?php echo $order['data']; ?>">
                   <input type="hidden" name="valor" value="<?php echo $order['valor']; ?>">
                   <input type="hidden" name="status" value="<?php echo $order['status']; ?>">
