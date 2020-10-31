@@ -381,8 +381,7 @@ if (isset($_GET['products'])) { /* Products page */ ?>
     $credito = $_POST['credito'];
 
     if (mysqli_query($conn, "INSERT INTO pessoas (idpessoa, nome, cpf, status, senha) VALUES ('$idPessoa', '$nome', '$cpf', '$status', '$senha') ")) {
-      $lastId = mysqli_insert_id($conn);
-      if (mysqli_query($conn, "INSERT INTO clientes (idcliente, renda, credito, fk_idpessoa) VALUES ('$idCliente', '$renda', '$credito', '$lastId') ")) {
+      if (mysqli_query($conn, "INSERT INTO clientes (idcliente, renda, credito, fk_idpessoa) VALUES ('$idCliente', '$renda', '$credito', '$idPessoa') ")) {
         if (mysqli_query($conn, "DELETE FROM lixeira WHERE id = '$id'")) {
           $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'lixeira.php?clients', 'text' => 'Cliente restaurado com sucesso'];
           header('location: templates/finish-operation.php');
@@ -530,6 +529,151 @@ if (isset($_GET['products'])) { /* Products page */ ?>
 
   </html>
 <?php } else if (isset($_GET['sellers'])) { /* Sellers page */ ?>
+  <?php
+  if ($_SESSION['type'] !== "admin")   {
+    header('location: home.php');
+  }
+
+  /* RESTORE SELLER */
+  if (isset($_POST['submit-restore-seller'])) {
+    include 'config/connection.php';
+
+    $id = $_POST['id'];
+    $idPessoa = $_POST['idpessoa'];
+    $nome = $_POST['nome'];
+    $cpf = $_POST['cpf'];
+    $status = $_POST['status'];
+    $senha = $_POST['senha'];
+    $idVendedor = $_POST['idvendedor'];
+    $salario = $_POST['salario'];
+
+    if (mysqli_query($conn, "INSERT INTO pessoas (idpessoa, nome, cpf, status, senha) VALUES ('$idPessoa', '$nome', '$cpf', '$status', '$senha') ")) {
+      if (mysqli_query($conn, "INSERT INTO vendedores (idvendedor, salario, fk_idpessoa) VALUES ('$idVendedor', '$salario', '$idPessoa') ")) {
+        if (mysqli_query($conn, "DELETE FROM lixeira WHERE id = '$id'")) {
+          $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'lixeira.php?sellers', 'text' => 'Vendedor restaurado com sucesso'];
+          header('location: templates/finish-operation.php');
+        } else {
+          $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'lixeira.php?sellers', 'text' => 'Houve um problema ao excluir o vendedor'];
+          header('location: templates/finish-operation.php');
+        }
+      } else {
+        $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'lixeira.php?sellers', 'text' => 'Houve um problema ao excluir o vendedor'];
+        header('location: templates/finish-operation.php');
+      }
+    } else {
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'lixeira.php?sellers', 'text' => 'Houve um problema ao excluir o vendedor'];
+      header('location: templates/finish-operation.php');
+    }
+
+    mysqli_close($conn);
+  }
+
+  /* GET DATA FROM DATABASE */
+  include 'config/connection.php';
+
+  $sql = "SELECT id, idpessoa, nome, cpf, status, senha, idvendedor, salario, data_exclusao, idusuario FROM lixeira WHERE idpessoa IS NOT NULL AND nome IS NOT NULL AND cpf IS NOT NULL AND status IS NOT NULL AND idvendedor IS NOT NULL AND salario IS NOT NULL";
+  $res = mysqli_query($conn, $sql);
+
+  if (mysqli_num_rows($res) > 0) {
+    // There is at least one deleted seller
+    $exist = 1;
+    $sellers = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+    mysqli_free_result($res);
+  } else {
+    // There are no deleted sellers
+    $exist = 0;
+  }
+
+  mysqli_close($conn);
+  ?>
+  <!DOCTYPE html>
+  <html lang="pt-br">
+
+  <head>
+    <?php include 'templates/head.php'; ?>
+    <link rel="stylesheet" href="styles/pages/lixeira.css">
+  </head>
+
+  <body class="trash-page">
+    <?php include 'templates/navbar.php'; ?>
+    <?php include 'templates/topbar.php'; ?>
+    <main>
+      <?php if ($exist == 0) { ?>
+        <table class="table table-hover border text-center">
+          <thead>
+            <tr>
+              <th scope="col">Nome</th>
+              <th scope="col">CPF</th>
+              <th scope="col">Status</th>
+              <th scope="col">Salário</th>
+              <th scope="col">Data de exclusão</th>
+              <th scope="col">Usuário</th>
+              <th scope="col">Opções</th>
+            </tr>
+          </thead>
+        </table>
+        <p class="text-center h5 mt-4">Não foram encontrados resultados para sua busca ＞﹏＜</p>
+        <a href="lixeira.php" class="btn btn-secondary mt-3">Voltar</a>
+      <?php } else if ($exist == 1) { ?>
+        <table class="table table-hover border text-center">
+        <thead>
+          <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">CPF</th>
+            <th scope="col">Status</th>
+            <th scope="col">Salário</th>
+            <th scope="col">Data de exclusão</th>
+            <th scope="col">Usuário</th>
+            <th scope="col">Opções</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($sellers as $seller) : ?>
+            <tr>
+              <td><?php echo $seller['nome']; ?></td>
+              <td><?php echo $seller['cpf']; ?></td>
+              <td><?php echo $seller['status']; ?></td>
+              <td><?php echo $seller['salario']; ?></td>
+              <td><?php echo $seller['data_exclusao']; ?></td>
+              <td>
+                <?php
+                include 'config/connection.php';
+
+                $userId = $seller['idusuario'];
+                $res = mysqli_query($conn, "SELECT nome FROM pessoas WHERE idpessoa = '$userId'");
+                $userName = mysqli_fetch_assoc($res);
+                echo $userName['nome'];
+
+                mysqli_close($conn);
+                ?>
+              </td>
+              <td class="buttons">
+                <form action="<?php echo $_SERVER['PHP_SELF']; ?>?sellers" method="POST">
+                  <input type="hidden" name="id" value="<?php echo $seller['id']; ?>">
+                  <input type="hidden" name="idpessoa" value="<?php echo $seller['idpessoa']; ?>">
+                  <input type="hidden" name="nome" value="<?php echo $seller['nome']; ?>">
+                  <input type="hidden" name="cpf" value="<?php echo $seller['cpf']; ?>">
+                  <input type="hidden" name="status" value="<?php echo $seller['status']; ?>">
+                  <input type="hidden" name="senha" value="<?php echo $seller['senha']; ?>">
+                  <input type="hidden" name="idvendedor" value="<?php echo $seller['idvendedor']; ?>">
+                  <input type="hidden" name="salario" value="<?php echo $seller['salario']; ?>">
+                  <button type="submit" name="submit-restore-seller" class="btn btn-outline-success">Restaurar</button>
+                </form>
+                <form action="<?php echo $_SERVER['PHP_SELF']; ?>?sellers" method="POST">
+                  <input type="hidden" name="id" value="<?php echo $seller['id']; ?>">
+                  <button type="submit" name="submit-delete-seller" class="btn btn-outline-danger">Excluir</button>
+                </form>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+      <?php } ?>
+    </main>
+  </body>
+
+  </html>
 <?php } else { /* Index page */ ?>
   <!DOCTYPE html>
   <html lang="pt-br">
