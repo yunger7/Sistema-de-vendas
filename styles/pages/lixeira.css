@@ -45,6 +45,8 @@
 /* Seller style */
 .index .seller .container {
   justify-content: center;
+  position: relative;
+  bottom: 10%;
 }
 
 .index .seller .row {
