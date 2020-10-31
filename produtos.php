@@ -688,6 +688,8 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
       <link rel="stylesheet" href="styles/pages/produtos.css">
     </head>
     <body id="final-search">
+      <?php include 'templates/navbar.php'; ?>
+      <?php include 'templates/topbar.php'; ?>
       <main>
         <h1>Insira os dados do cliente</h1>
         <section class="search">

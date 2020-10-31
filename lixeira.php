@@ -225,9 +225,10 @@ if (isset($_GET['products'])) { /* Products page */ ?>
     // Get seller id
     $userId = $_SESSION['user-id'];
     $res = mysqli_query($conn, "SELECT idvendedor FROM vendedores WHERE fk_idpessoa = '$userId'");
-    $sellerId = mysqli_fetch_assoc($res);
+    $res = mysqli_fetch_assoc($res);
+    $sellerId = $res['idvendedor'];
 
-    $sql = "SELECT id, idpedido, data, valor, status, idvendedor, idcliente, data_exclusao, idusuario FROM lixeira WHERE idvendedor = '$userId' AND idpedido IS NOT NULL AND data IS NOT NULL AND valor IS NOT NULL AND status IS NOT NULL AND idvendedor IS NOT NULL AND idcliente IS NOT NULL";
+    $sql = "SELECT id, idpedido, data, valor, status, idvendedor, idcliente, data_exclusao, idusuario FROM lixeira WHERE idvendedor = '$sellerId' AND idpedido IS NOT NULL AND data IS NOT NULL AND valor IS NOT NULL AND status IS NOT NULL AND idvendedor IS NOT NULL AND idcliente IS NOT NULL";
   }
 
   $res = mysqli_query($conn, $sql);
