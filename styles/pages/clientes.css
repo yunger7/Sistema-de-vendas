@@ -97,7 +97,7 @@ button[type='submit'] {
   justify-content: center;
 }
 
-.search form .container input {
+.search form .container button {
   width: 100%;
   max-width: 55px;
   height: 100%;
