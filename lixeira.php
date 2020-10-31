@@ -232,7 +232,7 @@ if (isset($_GET['products'])) { /* Products page */ ?>
   }
 
   $res = mysqli_query($conn, $sql);
-  
+
   if (mysqli_num_rows($res) > 0) {
     // There is at least one deleted order
     $orders = mysqli_fetch_all($res, MYSQLI_ASSOC);
@@ -279,83 +279,83 @@ if (isset($_GET['products'])) { /* Products page */ ?>
         <a href="lixeira.php" class="btn btn-secondary mt-3">Voltar</a>
       <?php } else if ($exist == 1) { ?>
         <table class="table table-hover border text-center">
-        <thead>
-          <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Data</th>
-            <th scope="col">Valor</th>
-            <th scope="col">Status</th>
-            <th scope="col">Cliente</th>
-            <th scope="col">Vendedor</th>
-            <th scope="col">Data de exclusão</th>
-            <th scope="col">Usuário</th>
-            <th scope="col">Opções</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($orders as $order) : ?>
+          <thead>
             <tr>
-              <td><?php echo $order['idpedido']; ?></td>
-              <td><?php echo $order['data']; ?></td>
-              <td><?php echo $order['valor']; ?></td>
-              <td><?php echo $order['status']; ?></td>
-              <td>
-                <?php
-                include 'config/connection.php';
-
-                $clientId = $order['idcliente'];
-                $res = mysqli_query($conn, "SELECT nome FROM pessoas JOIN clientes ON pessoas.idpessoa = clientes.fk_idpessoa WHERE idcliente = '$clientId'");
-                $clientName = mysqli_fetch_assoc($res);
-                echo $clientName['nome'];
-
-                mysqli_close($conn);
-                ?>
-              </td>
-              <td>
-                <?php
-                include 'config/connection.php';
-
-                $sellerId = $order['idvendedor'];
-                $res = mysqli_query($conn, "SELECT nome FROM pessoas JOIN vendedores ON pessoas.idpessoa = vendedores.fk_idpessoa WHERE idvendedor = '$sellerId'");
-                $sellerName = mysqli_fetch_assoc($res);
-                echo $sellerName['nome'];
-
-                mysqli_close($conn);
-                ?>
-              </td>
-              <td><?php echo $order['data_exclusao']; ?></td>
-              <td>
-                <?php
-                include 'config/connection.php';
-
-                $userId = $order['idusuario'];
-                $res = mysqli_query($conn, "SELECT nome FROM pessoas WHERE idpessoa = '$userId'");
-                $userName = mysqli_fetch_assoc($res);
-                echo $userName['nome'];
-
-                mysqli_close($conn);
-                ?>
-              </td>
-              <td class="buttons">
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>?orders" method="POST">
-                  <input type="hidden" name="id" value="<?php echo $order['id']; ?>">
-                  <input type="hidden" name="idpedido" value="<?php echo $order['idpedido']; ?>">
-                  <input type="hidden" name="data" value="<?php echo $order['data']; ?>">
-                  <input type="hidden" name="valor" value="<?php echo $order['valor']; ?>">
-                  <input type="hidden" name="status" value="<?php echo $order['status']; ?>">
-                  <input type="hidden" name="idvendedor" value="<?php echo $order['idvendedor']; ?>">
-                  <input type="hidden" name="idcliente" value="<?php echo $order['idcliente']; ?>">
-                  <button type="submit" name="submit-restore-order" class="btn btn-outline-success">Restaurar</button>
-                </form>
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>?orders" method="POST">
-                  <input type="hidden" name="id" value="<?php echo $order['id']; ?>">
-                  <button type="submit" name="submit-delete-order" class="btn btn-outline-danger">Excluir</button>
-                </form>
-              </td>
+              <th scope="col">ID</th>
+              <th scope="col">Data</th>
+              <th scope="col">Valor</th>
+              <th scope="col">Status</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Vendedor</th>
+              <th scope="col">Data de exclusão</th>
+              <th scope="col">Usuário</th>
+              <th scope="col">Opções</th>
             </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <?php foreach ($orders as $order) : ?>
+              <tr>
+                <td><?php echo $order['idpedido']; ?></td>
+                <td><?php echo $order['data']; ?></td>
+                <td><?php echo $order['valor']; ?></td>
+                <td><?php echo $order['status']; ?></td>
+                <td>
+                  <?php
+                  include 'config/connection.php';
+
+                  $clientId = $order['idcliente'];
+                  $res = mysqli_query($conn, "SELECT nome FROM pessoas JOIN clientes ON pessoas.idpessoa = clientes.fk_idpessoa WHERE idcliente = '$clientId'");
+                  $clientName = mysqli_fetch_assoc($res);
+                  echo $clientName['nome'];
+
+                  mysqli_close($conn);
+                  ?>
+                </td>
+                <td>
+                  <?php
+                  include 'config/connection.php';
+
+                  $sellerId = $order['idvendedor'];
+                  $res = mysqli_query($conn, "SELECT nome FROM pessoas JOIN vendedores ON pessoas.idpessoa = vendedores.fk_idpessoa WHERE idvendedor = '$sellerId'");
+                  $sellerName = mysqli_fetch_assoc($res);
+                  echo $sellerName['nome'];
+
+                  mysqli_close($conn);
+                  ?>
+                </td>
+                <td><?php echo $order['data_exclusao']; ?></td>
+                <td>
+                  <?php
+                  include 'config/connection.php';
+
+                  $userId = $order['idusuario'];
+                  $res = mysqli_query($conn, "SELECT nome FROM pessoas WHERE idpessoa = '$userId'");
+                  $userName = mysqli_fetch_assoc($res);
+                  echo $userName['nome'];
+
+                  mysqli_close($conn);
+                  ?>
+                </td>
+                <td class="buttons">
+                  <form action="<?php echo $_SERVER['PHP_SELF']; ?>?orders" method="POST">
+                    <input type="hidden" name="id" value="<?php echo $order['id']; ?>">
+                    <input type="hidden" name="idpedido" value="<?php echo $order['idpedido']; ?>">
+                    <input type="hidden" name="data" value="<?php echo $order['data']; ?>">
+                    <input type="hidden" name="valor" value="<?php echo $order['valor']; ?>">
+                    <input type="hidden" name="status" value="<?php echo $order['status']; ?>">
+                    <input type="hidden" name="idvendedor" value="<?php echo $order['idvendedor']; ?>">
+                    <input type="hidden" name="idcliente" value="<?php echo $order['idcliente']; ?>">
+                    <button type="submit" name="submit-restore-order" class="btn btn-outline-success">Restaurar</button>
+                  </form>
+                  <form action="<?php echo $_SERVER['PHP_SELF']; ?>?orders" method="POST">
+                    <input type="hidden" name="id" value="<?php echo $order['id']; ?>">
+                    <button type="submit" name="submit-delete-order" class="btn btn-outline-danger">Excluir</button>
+                  </form>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
       <?php } ?>
     </main>
   </body>
@@ -469,61 +469,61 @@ if (isset($_GET['products'])) { /* Products page */ ?>
         <a href="lixeira.php" class="btn btn-secondary mt-3">Voltar</a>
       <?php } else if ($exist == 1) { ?>
         <table class="table table-hover border text-center">
-        <thead>
-          <tr>
-            <th scope="col">Nome</th>
-            <th scope="col">CPF</th>
-            <th scope="col">Status</th>
-            <th scope="col">Renda</th>
-            <th scope="col">Crédito</th>
-            <th scope="col">Data de exclusão</th>
-            <th scope="col">Usuário</th>
-            <th scope="col">Opções</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($clients as $client) : ?>
+          <thead>
             <tr>
-              <td><?php echo $client['nome']; ?></td>
-              <td><?php echo $client['cpf']; ?></td>
-              <td><?php echo $client['status']; ?></td>
-              <td><?php echo $client['renda']; ?></td>
-              <td><?php echo $client['credito']; ?></td>
-              <td><?php echo $client['data_exclusao']; ?></td>
-              <td>
-                <?php
-                include 'config/connection.php';
-
-                $userId = $client['idusuario'];
-                $res = mysqli_query($conn, "SELECT nome FROM pessoas WHERE idpessoa = '$userId'");
-                $userName = mysqli_fetch_assoc($res);
-                echo $userName['nome'];
-
-                mysqli_close($conn);
-                ?>
-              </td>
-              <td class="buttons">
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>?clients" method="POST">
-                  <input type="hidden" name="id" value="<?php echo $client['id']; ?>">
-                  <input type="hidden" name="idpessoa" value="<?php echo $client['idpessoa']; ?>">
-                  <input type="hidden" name="nome" value="<?php echo $client['nome']; ?>">
-                  <input type="hidden" name="cpf" value="<?php echo $client['cpf']; ?>">
-                  <input type="hidden" name="status" value="<?php echo $client['status']; ?>">
-                  <input type="hidden" name="senha" value="<?php echo $client['senha']; ?>">
-                  <input type="hidden" name="idcliente" value="<?php echo $client['idcliente']; ?>">
-                  <input type="hidden" name="renda" value="<?php echo $client['renda']; ?>">
-                  <input type="hidden" name="credito" value="<?php echo $client['credito']; ?>">
-                  <button type="submit" name="submit-restore-client" class="btn btn-outline-success">Restaurar</button>
-                </form>
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>?clients" method="POST">
-                  <input type="hidden" name="id" value="<?php echo $client['id']; ?>">
-                  <button type="submit" name="submit-delete-client" class="btn btn-outline-danger">Excluir</button>
-                </form>
-              </td>
+              <th scope="col">Nome</th>
+              <th scope="col">CPF</th>
+              <th scope="col">Status</th>
+              <th scope="col">Renda</th>
+              <th scope="col">Crédito</th>
+              <th scope="col">Data de exclusão</th>
+              <th scope="col">Usuário</th>
+              <th scope="col">Opções</th>
             </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <?php foreach ($clients as $client) : ?>
+              <tr>
+                <td><?php echo $client['nome']; ?></td>
+                <td><?php echo $client['cpf']; ?></td>
+                <td><?php echo $client['status']; ?></td>
+                <td><?php echo $client['renda']; ?></td>
+                <td><?php echo $client['credito']; ?></td>
+                <td><?php echo $client['data_exclusao']; ?></td>
+                <td>
+                  <?php
+                  include 'config/connection.php';
+
+                  $userId = $client['idusuario'];
+                  $res = mysqli_query($conn, "SELECT nome FROM pessoas WHERE idpessoa = '$userId'");
+                  $userName = mysqli_fetch_assoc($res);
+                  echo $userName['nome'];
+
+                  mysqli_close($conn);
+                  ?>
+                </td>
+                <td class="buttons">
+                  <form action="<?php echo $_SERVER['PHP_SELF']; ?>?clients" method="POST">
+                    <input type="hidden" name="id" value="<?php echo $client['id']; ?>">
+                    <input type="hidden" name="idpessoa" value="<?php echo $client['idpessoa']; ?>">
+                    <input type="hidden" name="nome" value="<?php echo $client['nome']; ?>">
+                    <input type="hidden" name="cpf" value="<?php echo $client['cpf']; ?>">
+                    <input type="hidden" name="status" value="<?php echo $client['status']; ?>">
+                    <input type="hidden" name="senha" value="<?php echo $client['senha']; ?>">
+                    <input type="hidden" name="idcliente" value="<?php echo $client['idcliente']; ?>">
+                    <input type="hidden" name="renda" value="<?php echo $client['renda']; ?>">
+                    <input type="hidden" name="credito" value="<?php echo $client['credito']; ?>">
+                    <button type="submit" name="submit-restore-client" class="btn btn-outline-success">Restaurar</button>
+                  </form>
+                  <form action="<?php echo $_SERVER['PHP_SELF']; ?>?clients" method="POST">
+                    <input type="hidden" name="id" value="<?php echo $client['id']; ?>">
+                    <button type="submit" name="submit-delete-client" class="btn btn-outline-danger">Excluir</button>
+                  </form>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
       <?php } ?>
     </main>
   </body>
@@ -531,7 +531,7 @@ if (isset($_GET['products'])) { /* Products page */ ?>
   </html>
 <?php } else if (isset($_GET['sellers'])) { /* Sellers page */ ?>
   <?php
-  if ($_SESSION['type'] !== "admin")   {
+  if ($_SESSION['type'] !== "admin") {
     header('location: home.php');
   }
 
@@ -635,58 +635,58 @@ if (isset($_GET['products'])) { /* Products page */ ?>
         <a href="lixeira.php" class="btn btn-secondary mt-3">Voltar</a>
       <?php } else if ($exist == 1) { ?>
         <table class="table table-hover border text-center">
-        <thead>
-          <tr>
-            <th scope="col">Nome</th>
-            <th scope="col">CPF</th>
-            <th scope="col">Status</th>
-            <th scope="col">Salário</th>
-            <th scope="col">Data de exclusão</th>
-            <th scope="col">Usuário</th>
-            <th scope="col">Opções</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($sellers as $seller) : ?>
+          <thead>
             <tr>
-              <td><?php echo $seller['nome']; ?></td>
-              <td><?php echo $seller['cpf']; ?></td>
-              <td><?php echo $seller['status']; ?></td>
-              <td><?php echo $seller['salario']; ?></td>
-              <td><?php echo $seller['data_exclusao']; ?></td>
-              <td>
-                <?php
-                include 'config/connection.php';
-
-                $userId = $seller['idusuario'];
-                $res = mysqli_query($conn, "SELECT nome FROM pessoas WHERE idpessoa = '$userId'");
-                $userName = mysqli_fetch_assoc($res);
-                echo $userName['nome'];
-
-                mysqli_close($conn);
-                ?>
-              </td>
-              <td class="buttons">
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>?sellers" method="POST">
-                  <input type="hidden" name="id" value="<?php echo $seller['id']; ?>">
-                  <input type="hidden" name="idpessoa" value="<?php echo $seller['idpessoa']; ?>">
-                  <input type="hidden" name="nome" value="<?php echo $seller['nome']; ?>">
-                  <input type="hidden" name="cpf" value="<?php echo $seller['cpf']; ?>">
-                  <input type="hidden" name="status" value="<?php echo $seller['status']; ?>">
-                  <input type="hidden" name="senha" value="<?php echo $seller['senha']; ?>">
-                  <input type="hidden" name="idvendedor" value="<?php echo $seller['idvendedor']; ?>">
-                  <input type="hidden" name="salario" value="<?php echo $seller['salario']; ?>">
-                  <button type="submit" name="submit-restore-seller" class="btn btn-outline-success">Restaurar</button>
-                </form>
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>?sellers" method="POST">
-                  <input type="hidden" name="id" value="<?php echo $seller['id']; ?>">
-                  <button type="submit" name="submit-delete-seller" class="btn btn-outline-danger">Excluir</button>
-                </form>
-              </td>
+              <th scope="col">Nome</th>
+              <th scope="col">CPF</th>
+              <th scope="col">Status</th>
+              <th scope="col">Salário</th>
+              <th scope="col">Data de exclusão</th>
+              <th scope="col">Usuário</th>
+              <th scope="col">Opções</th>
             </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <?php foreach ($sellers as $seller) : ?>
+              <tr>
+                <td><?php echo $seller['nome']; ?></td>
+                <td><?php echo $seller['cpf']; ?></td>
+                <td><?php echo $seller['status']; ?></td>
+                <td><?php echo $seller['salario']; ?></td>
+                <td><?php echo $seller['data_exclusao']; ?></td>
+                <td>
+                  <?php
+                  include 'config/connection.php';
+
+                  $userId = $seller['idusuario'];
+                  $res = mysqli_query($conn, "SELECT nome FROM pessoas WHERE idpessoa = '$userId'");
+                  $userName = mysqli_fetch_assoc($res);
+                  echo $userName['nome'];
+
+                  mysqli_close($conn);
+                  ?>
+                </td>
+                <td class="buttons">
+                  <form action="<?php echo $_SERVER['PHP_SELF']; ?>?sellers" method="POST">
+                    <input type="hidden" name="id" value="<?php echo $seller['id']; ?>">
+                    <input type="hidden" name="idpessoa" value="<?php echo $seller['idpessoa']; ?>">
+                    <input type="hidden" name="nome" value="<?php echo $seller['nome']; ?>">
+                    <input type="hidden" name="cpf" value="<?php echo $seller['cpf']; ?>">
+                    <input type="hidden" name="status" value="<?php echo $seller['status']; ?>">
+                    <input type="hidden" name="senha" value="<?php echo $seller['senha']; ?>">
+                    <input type="hidden" name="idvendedor" value="<?php echo $seller['idvendedor']; ?>">
+                    <input type="hidden" name="salario" value="<?php echo $seller['salario']; ?>">
+                    <button type="submit" name="submit-restore-seller" class="btn btn-outline-success">Restaurar</button>
+                  </form>
+                  <form action="<?php echo $_SERVER['PHP_SELF']; ?>?sellers" method="POST">
+                    <input type="hidden" name="id" value="<?php echo $seller['id']; ?>">
+                    <button type="submit" name="submit-delete-seller" class="btn btn-outline-danger">Excluir</button>
+                  </form>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
       <?php } ?>
     </main>
   </body>

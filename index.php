@@ -7,7 +7,7 @@ if (isset($_POST['submit-login'])) {
   $login = $_POST['login'];
   $password = base64_encode($_POST['password']);
 
-  $checkDB = mysqli_query($conn, "SELECT * FROM pessoas WHERE nome = '$login' AND senha = '$password'");
+  $checkDB = mysqli_query($conn, "SELECT * FROM pessoas WHERE cpf = '$login' AND senha = '$password'");
 
   if (mysqli_num_rows($checkDB) > 0) {
     // user exists in database
@@ -50,6 +50,7 @@ if (isset($_POST['submit-login'])) {
 }
 /* REGISTER PASSWORD */
 if (isset($_POST['submit-password'])) {
+  session_start();
   $cpf = $_POST['cpf'];
   $password = base64_encode($_POST['password']);
 
@@ -63,25 +64,15 @@ if (isset($_POST['submit-password'])) {
     $sql = "UPDATE pessoas SET senha = '$password' WHERE cpf = '$cpf'";
 
     if (mysqli_query($conn, $sql)) {
-      echo "
-        <script language='javascript' type='text/javascript'>
-          alert('Senha cadastrada com sucesso');
-          location.href = 'index.php';
-        </script>
-      ";
+      $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'index.php', 'text' => 'Senha cadastrada com sucesso'];
+      header('location: templates/finish-operation.php');
     } else {
-      echo "
-        <script language='javascript' type='text/javascript'>
-          alert('Houve um problema ao cadastrar a senha');
-        </script>
-      ";
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'index.php', 'text' => 'Houve um problema ao cadastrar a senha'];
+      header('location: templates/finish-operation.php');
     }
   } else {
-    echo "
-      <script language='javascript' type='text/javascript'>
-        alert('Não existe um usuário com esse CPF');
-      </script>
-    ";
+    $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'index.php', 'text' => 'Houve um problema ao cadastrar a senha'];
+    header('location: templates/finish-operation.php');
   }
 
   mysqli_free_result($cliente);
