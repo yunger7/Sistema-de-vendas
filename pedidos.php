@@ -688,12 +688,30 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
                     </div>
                   </div>
                   <div class="search-letters">
-                    <?php
+                  <?php
                     $alfabeto = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+                    include 'config/connection.php';
+
+                    $letrasExistentes = mysqli_query($conn, "SELECT DISTINCT LEFT(nome, 1) AS letra FROM pessoas JOIN clientes ON pessoas.idpessoa = clientes.fk_idpessoa ORDER BY letra");
+                    $iniciais = mysqli_fetch_all($letrasExistentes, MYSQLI_ASSOC);
+
+                    mysqli_close($conn);
                     foreach ($alfabeto as $letra) {
-                      echo "<input type='submit' name='letter' value='$letra' class='btn btn-link'>";
+                      $existeLetra = 0;
+                      foreach ($iniciais as $inicial) {
+                        if ($letra == $inicial['letra']) {
+                          $existeLetra = 1;
+                        }
+                      }
+                      
+                      if ($existeLetra == 0) {
+                        echo "<button type='button' class='btn btn-link text-secondary'>$letra</button>";
+                      } else if ($existeLetra == 1) {
+                        echo "<button type='submit' name='letter' value='$letra' class='btn btn-link'>$letra</button>";
+                      }
+                      
                     }
-                    ?>
+                  ?>
                   </div>
                 </form>
               </section>
