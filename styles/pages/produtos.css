@@ -22,7 +22,7 @@ main {
   text-align: center;
 }
 
-.search form input[type='submit'] {
+.search form button {
   padding: 0 5px;
 }
 
