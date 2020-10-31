@@ -325,26 +325,61 @@ if (isset($_GET['name']) || isset($_GET['letter'])) { /* Search page */ ?>
             </div>
           </div>
           <?php
+          include 'config/connection.php';
+
+          $letrasExistentes = mysqli_query($conn, "SELECT DISTINCT LEFT(nome, 1) AS letra FROM pessoas JOIN vendedores ON pessoas.idpessoa = vendedores.fk_idpessoa ORDER BY letra");
+          $iniciais = mysqli_fetch_all($letrasExistentes, MYSQLI_ASSOC);
+
           $alfabeto = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
-          $gridCount = 0; ?>
+          $gridCount = 0; 
+          
+          mysqli_close($conn);
+          ?>
           <div class="container">
             <?php foreach ($alfabeto as $letra) {
-              if ($gridCount == 0) {
-                echo "<div class='row'>";
+              $existeLetra = 0;
+              foreach ($iniciais as $inicial) {
+                if ($letra == $inicial['letra']) {
+                  $existeLetra = 1;
+                }
               }
 
-              if ($gridCount < 5) {
-                echo "<div class='col-2'>";
-                echo "<input type='submit' name='letter' value='$letra' class='btn btn-outline-info'>";
-                echo "</div>";
-                $gridCount += 1;
-              } else {
-                echo "<div class='col-2'>";
-                echo "<input type='submit' name='letter' value='$letra' class='btn btn-outline-info'>";
-                echo "</div>";
-                echo "</div>";
-                $gridCount = 0;
-              }
+              if ($existeLetra == 1) {
+                if ($gridCount == 0) {
+                  echo "<div class='row'>";
+                }
+  
+                if ($gridCount < 5) {
+                  echo "<div class='col-2'>";
+                  echo "<button type='submit' name='letter' value='$letra' class='btn btn-info'>$letra</button>";
+                  echo "</div>";
+                  $gridCount += 1;
+                } else {
+                  echo "<div class='col-2'>";
+                  echo "<button type='submit' name='letter' value='$letra' class='btn btn-info'>$letra</button>";
+                  echo "</div>";
+                  echo "</div>";
+                  $gridCount = 0;
+                }
+              } else if ($existeLetra == 0) {
+                if ($gridCount == 0) {
+                  echo "<div class='row'>";
+                }
+  
+                if ($gridCount < 5) {
+                  echo "<div class='col-2'>";
+                  echo "<button type='button' class='btn btn-outline-secondary' disabled>$letra</button>";
+                  echo "</div>";
+                  $gridCount += 1;
+                } else {
+                  echo "<div class='col-2'>";
+                  echo "<button type='button' class='btn btn-outline-secondary' disabled>$letra</button>";
+                  echo "</div>";
+                  echo "</div>";
+                  $gridCount = 0;
+                }
+
+              }  
             } ?>
           </div>
         </form>
