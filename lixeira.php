@@ -233,7 +233,7 @@ if (isset($_GET['products'])) { /* Products page */ ?>
   $res = mysqli_query($conn, $sql);
   
   if (mysqli_num_rows($res) > 0) {
-    // There is at least one deleted orders
+    // There is at least one deleted order
     $orders = mysqli_fetch_all($res, MYSQLI_ASSOC);
     $exist = 1;
 
@@ -277,8 +277,7 @@ if (isset($_GET['products'])) { /* Products page */ ?>
         <p class="text-center h5 mt-4">Não foram encontrados resultados para sua busca ＞﹏＜</p>
         <a href="lixeira.php" class="btn btn-secondary mt-3">Voltar</a>
       <?php } else if ($exist == 1) { ?>
-      <?php } ?>
-      <table class="table table-hover border text-center">
+        <table class="table table-hover border text-center">
         <thead>
           <tr>
             <th scope="col">ID</th>
@@ -356,11 +355,180 @@ if (isset($_GET['products'])) { /* Products page */ ?>
           <?php endforeach; ?>
         </tbody>
       </table>
+      <?php } ?>
     </main>
   </body>
 
   </html>
 <?php } else if (isset($_GET['clients'])) { /* Clients page */ ?>
+  <?php
+  if ($_SESSION['priority'] < 1) {
+    header('location: home.php');
+  }
+
+  /* RESTORE CLIENT */
+  if (isset($_POST['submit-restore-client'])) {
+    include 'config/connection.php';
+
+    $id = $_POST['id'];
+    $idPessoa = $_POST['idpessoa'];
+    $nome = $_POST['nome'];
+    $cpf = $_POST['cpf'];
+    $status = $_POST['status'];
+    $senha = $_POST['senha'];
+    $idCliente = $_POST['idcliente'];
+    $renda = $_POST['renda'];
+    $credito = $_POST['credito'];
+
+    if (mysqli_query($conn, "INSERT INTO pessoas (idpessoa, nome, cpf, status, senha) VALUES ('$idPessoa', '$nome', '$cpf', '$status', '$senha') ")) {
+      $lastId = mysqli_insert_id($conn);
+      if (mysqli_query($conn, "INSERT INTO clientes (idcliente, renda, credito, fk_idpessoa) VALUES ('$idCliente', '$renda', '$credito', '$lastId') ")) {
+        if (mysqli_query($conn, "DELETE FROM lixeira WHERE id = '$id'")) {
+          $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'lixeira.php?clients', 'text' => 'Cliente restaurado com sucesso'];
+          header('location: templates/finish-operation.php');
+        } else {
+          $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'lixeira.php?clients', 'text' => 'Houve um problema ao restaurar o cliente'];
+          header('location: templates/finish-operation.php');
+        }
+      } else {
+        $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'lixeira.php?clients', 'text' => 'Houve um problema ao restaurar o cliente'];
+        header('location: templates/finish-operation.php');
+      }
+    } else {
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'lixeira.php?clients', 'text' => 'Houve um problema ao restaurar o cliente'];
+      header('location: templates/finish-operation.php');
+    }
+
+    mysqli_close($conn);
+  }
+
+  /* PERMANENTLY DELETE CLIENT */
+  if (isset($_POST['submit-delete-client'])) {
+    include 'config/connection.php';
+
+    $id = $_POST['id'];
+
+    if (mysqli_query($conn, "DELETE FROM lixeira WHERE id = '$id'")) {
+      $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'lixeira.php?clients', 'text' => 'Cliente excluído com sucesso'];
+      header('location: templates/finish-operation.php');
+    } else {
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'lixeira.php?clients', 'text' => 'Houve um problema ao excluir o cliente'];
+      header('location: templates/finish-operation.php');
+    }
+
+    mysqli_close($conn);
+  }
+
+  /* GET DATA FROM DATABASE */
+  include 'config/connection.php';
+
+  $sql = "SELECT id, idpessoa, nome, cpf, status, senha, idcliente, renda, credito, data_exclusao, idusuario FROM lixeira WHERE idpessoa IS NOT NULL AND nome IS NOT NULL AND cpf IS NOT NULL AND status IS NOT NULL AND idcliente IS NOT NULL";
+  $res = mysqli_query($conn, $sql);
+
+  if (mysqli_num_rows($res) > 0) {
+    // There is at least one deleted client
+    $exist = 1;
+    $clients = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+    mysqli_free_result($res);
+  } else {
+    // There are no deleted clients
+    $exist = 0;
+  }
+
+  mysqli_close($conn);
+  ?>
+  <!DOCTYPE html>
+  <html lang="pt-br">
+
+  <head>
+    <?php include 'templates/head.php'; ?>
+    <link rel="stylesheet" href="styles/pages/lixeira.css">
+  </head>
+
+  <body class="trash-page">
+    <?php include 'templates/navbar.php'; ?>
+    <?php include 'templates/topbar.php'; ?>
+    <main>
+      <?php if ($exist == 0) { ?>
+        <table class="table table-hover border text-center">
+          <thead>
+            <tr>
+              <th scope="col">Nome</th>
+              <th scope="col">CPF</th>
+              <th scope="col">Status</th>
+              <th scope="col">Renda</th>
+              <th scope="col">Crédito</th>
+              <th scope="col">Data de exclusão</th>
+              <th scope="col">Usuário</th>
+              <th scope="col">Opções</th>
+            </tr>
+          </thead>
+        </table>
+        <p class="text-center h5 mt-4">Não foram encontrados resultados para sua busca ＞﹏＜</p>
+        <a href="lixeira.php" class="btn btn-secondary mt-3">Voltar</a>
+      <?php } else if ($exist == 1) { ?>
+        <table class="table table-hover border text-center">
+        <thead>
+          <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">CPF</th>
+            <th scope="col">Status</th>
+            <th scope="col">Renda</th>
+            <th scope="col">Crédito</th>
+            <th scope="col">Data de exclusão</th>
+            <th scope="col">Usuário</th>
+            <th scope="col">Opções</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($clients as $client) : ?>
+            <tr>
+              <td><?php echo $client['nome']; ?></td>
+              <td><?php echo $client['cpf']; ?></td>
+              <td><?php echo $client['status']; ?></td>
+              <td><?php echo $client['renda']; ?></td>
+              <td><?php echo $client['credito']; ?></td>
+              <td><?php echo $client['data_exclusao']; ?></td>
+              <td>
+                <?php
+                include 'config/connection.php';
+
+                $userId = $client['idusuario'];
+                $res = mysqli_query($conn, "SELECT nome FROM pessoas WHERE idpessoa = '$userId'");
+                $userName = mysqli_fetch_assoc($res);
+                echo $userName['nome'];
+
+                mysqli_close($conn);
+                ?>
+              </td>
+              <td class="buttons">
+                <form action="<?php echo $_SERVER['PHP_SELF']; ?>?clients" method="POST">
+                  <input type="hidden" name="id" value="<?php echo $client['id']; ?>">
+                  <input type="hidden" name="idpessoa" value="<?php echo $client['idpessoa']; ?>">
+                  <input type="hidden" name="nome" value="<?php echo $client['nome']; ?>">
+                  <input type="hidden" name="cpf" value="<?php echo $client['cpf']; ?>">
+                  <input type="hidden" name="status" value="<?php echo $client['status']; ?>">
+                  <input type="hidden" name="senha" value="<?php echo $client['senha']; ?>">
+                  <input type="hidden" name="idcliente" value="<?php echo $client['idcliente']; ?>">
+                  <input type="hidden" name="renda" value="<?php echo $client['renda']; ?>">
+                  <input type="hidden" name="credito" value="<?php echo $client['credito']; ?>">
+                  <button type="submit" name="submit-restore-client" class="btn btn-outline-success">Restaurar</button>
+                </form>
+                <form action="<?php echo $_SERVER['PHP_SELF']; ?>?clients" method="POST">
+                  <input type="hidden" name="id" value="<?php echo $client['id']; ?>">
+                  <button type="submit" name="submit-delete-client" class="btn btn-outline-danger">Excluir</button>
+                </form>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+      <?php } ?>
+    </main>
+  </body>
+
+  </html>
 <?php } else if (isset($_GET['sellers'])) { /* Sellers page */ ?>
 <?php } else { /* Index page */ ?>
   <!DOCTYPE html>
