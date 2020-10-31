@@ -568,6 +568,23 @@ if (isset($_GET['products'])) { /* Products page */ ?>
     mysqli_close($conn);
   }
 
+  /* PERMANENTLY DELETE SELLER */
+  if (isset($_POST['submit-delete-seller'])) {
+    include 'config/connection.php';
+
+    $id = $_POST['id'];
+
+    if (mysqli_query($conn, "DELETE FROM lixeira WHERE id = '$id'")) {
+      $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'lixeira.php?sellers', 'text' => 'Vendedor excluído com sucesso'];
+      header('location: templates/finish-operation.php');
+    } else {
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'lixeira.php?sellers', 'text' => 'Houve um problema ao excluir o vendedor'];
+      header('location: templates/finish-operation.php');
+    }
+
+    mysqli_close($conn);
+  }
+
   /* GET DATA FROM DATABASE */
   include 'config/connection.php';
 
