@@ -24,15 +24,15 @@
   color: #138496;
 }
 
-#topbar #left-logo {
-  width: 40%;
+#topbar .left-box {
+  width: 50%;
   height: 100%;
 
   display: flex;
   align-items: center;
 }
 
-#topbar #left-logo a {
+#topbar .left-box a {
   display: flex;
   align-items: center;
 }
@@ -43,6 +43,8 @@
 
 #topbar svg#cart-logo {
   margin-right: 0.4rem;
+  width: 32px !important;
+  height: 32px !important;
 }
 
 #topbar #cart {

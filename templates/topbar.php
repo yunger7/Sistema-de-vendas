@@ -2,7 +2,7 @@
 $currentFile = basename($_SERVER['PHP_SELF']);
 ?>
 <div id="topbar" class="bg-light">
-  <div id="left-logo">
+  <div class="left-box">
     <?php if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) { ?>
       <a href="produtos.php?cart" id="cart">
         <svg id="cart-logo" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="shopping-cart" class="svg-inline--fa fa-shopping-cart fa-w-18" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="2rem" height="2rem">
@@ -22,7 +22,17 @@ $currentFile = basename($_SERVER['PHP_SELF']);
               <path fill-rule="evenodd" d="M5.5 3.5a2.5 2.5 0 0 1 5 0V4h-5v-.5zm6 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0zM8.5 8a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V12a.5.5 0 0 0 1 0v-1.5H10a.5.5 0 0 0 0-1H8.5V8z" />
             </svg>
           </div>
-          <a href="produtos.php?add-product">Adicionar produto</a>
+          Adicionar produto
+        </div>
+      </a>
+      <a href="produtos.php?add-discount">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <svg width="25px" height="25px" viewBox="0 0 16 16" class="bi bi-percent" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M13.442 2.558a.625.625 0 0 1 0 .884l-10 10a.625.625 0 1 1-.884-.884l10-10a.625.625 0 0 1 .884 0zM4.5 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm7 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+            </svg>
+          </div>
+          Adicionar desconto
         </div>
       </a>
     <?php } ?>

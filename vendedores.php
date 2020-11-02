@@ -202,16 +202,26 @@ if (isset($_GET['name']) || isset($_GET['letter'])) { /* Search page */ ?>
           </thead>
           <tbody>
             <?php foreach ($sellers as $seller) { ?>
-              <tr>
-                <td><?php echo $seller['nome']; ?></td>
-                <td><?php echo $seller['cpf']; ?></td>
-                <td><?php echo $seller['salario']; ?></td>
-                <td><?php echo $seller['status']; ?></td>
-                <td>
-                  <a href="<?php echo $_SERVER['PHP_SELF']; ?>?edit-seller&id=<?php echo $seller['idpessoa']; ?>" class="btn btn-outline-warning">Editar</a>
-                  <a href="<?php echo $_SERVER['PHP_SELF']; ?>?delete-seller&id=<?php echo $seller['idpessoa']; ?>" class="btn btn-outline-danger">Excluir</a>
-                </td>
-              </tr>
+              <?php if ($seller['cpf'] == "12345678901") { /* Is admin */ ?>
+                <tr>
+                  <td><?php echo $seller['nome']; ?></td>
+                  <td><?php echo $seller['cpf']; ?></td>
+                  <td><?php echo $seller['salario']; ?></td>
+                  <td><?php echo $seller['status']; ?></td>
+                  <td></td>
+                </tr>
+              <?php } else { ?>
+                <tr>
+                  <td><?php echo $seller['nome']; ?></td>
+                  <td><?php echo $seller['cpf']; ?></td>
+                  <td><?php echo $seller['salario']; ?></td>
+                  <td><?php echo $seller['status']; ?></td>
+                  <td>
+                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?edit-seller&id=<?php echo $seller['idpessoa']; ?>" class="btn btn-outline-warning">Editar</a>
+                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?delete-seller&id=<?php echo $seller['idpessoa']; ?>" class="btn btn-outline-danger">Excluir</a>
+                  </td>
+                </tr>
+              <?php } ?>
             <?php } ?>
           </tbody>
         </table>
