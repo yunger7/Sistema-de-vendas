@@ -2,6 +2,18 @@ body {
   overflow-x: hidden;
 }
 
+p.old-price {
+  margin-bottom: 0;
+}
+
+span.strike {
+  text-decoration: line-through;
+}
+
+span.deal {
+  font-size: 1.2rem;
+}
+
 main {
   padding-top: 1rem;
 }

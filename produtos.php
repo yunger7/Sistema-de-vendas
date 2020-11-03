@@ -1150,7 +1150,17 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
                   </a>
                   <?php } ?>
                   <p class="h6"><?php echo $product['descricao']; ?></p>
-                  <p>R$ <?php echo $product['valor']; ?></p>
+                  <?php if ($product['desconto'] == 0) { ?>
+                    <p>R$ <?php echo $product['valor']; ?></p>
+                  <?php } else { ?>
+                    <p class="old-price"><span class="strike">R$ <?php echo $product['valor']; ?></span></p>
+                    <?php
+                    // Calculate discounted price
+                    $newPrice = $product['valor'] - ($product['desconto'] / 100) * $product['valor'];
+                    ?>
+                    <p><span class="deal">R$ <?php echo number_format((float)$newPrice, 2, '.', ''); ?></span></p>
+                  <?php } ?>
+                  
                   <?php if ($product['estoque'] > 0 && $product['status'] == "A") { ?>
                     <button type="submit" name="add-to-cart" class="btn btn-info" 
                       <?php
