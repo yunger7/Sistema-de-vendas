@@ -404,20 +404,20 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   $cases = [$_GET['name'] ?? "", $_GET['letter'] ?? ""];
 
   switch ($cases) {
-      // search by name
+    // search by name
     case ($cases[0] !== "" && $cases[1] === ""):
       $name = $_GET['name'];
       $sql = "SELECT * FROM produtos WHERE descricao LIKE '%$name%'";
-      break;
-      // search by letter
+    break;
+    // search by letter
     case ($cases[0] === "" && $cases[1] !== ""):
       $letter = $_GET['letter'];
       $sql = "SELECT * FROM produtos WHERE descricao LIKE '$letter%'";
-      break;
-      // empty search
+    break;
+    // empty search
     case ($cases[0] === "" && $cases[1] === ""):
       $sql = "SELECT * FROM produtos";
-      break;
+    break;
   }
 
   // Database search
@@ -426,6 +426,8 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   if (mysqli_num_rows($res) > 0) {
     $searchResults = 1;
     $products = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+    mysqli_free_result($res);
   } else {
     $searchResults = 0;
   }
@@ -882,10 +884,36 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   </html>
 <?php } else if (isset($_GET['add-discount'])) { /* Add discount page */ ?>
   <?php
+  /* DATABASE SEARCH */
   include 'config/connection.php';
 
-  $res = mysqli_query($conn, "SELECT * FROM produtos ORDER BY descricao");
-  
+  $cases = [$_POST['name'] ?? "", $_POST['letter'] ?? ""];
+
+  switch ($cases) {
+    // search by name
+    case ($cases[0] !== "" && $cases[1] === ""):
+      $name = $_POST['name'];
+      $sql = "SELECT * FROM produtos WHERE descricao LIKE '%$name%'";
+    break;
+    // search by letter
+    case ($cases[0] === "" && $cases[1] !== ""):
+      $letter = $_POST['letter'];
+      $sql = "SELECT * FROM produtos WHERE descricao LIKE '$letter%'";
+    break;
+    // empty search
+    case ($cases[0] === "" && $cases[1] === ""):
+      $sql = "SELECT * FROM produtos ORDER BY descricao";
+    break;
+    // default
+    default:
+      $sql = "SELECT * FROM produtos ORDER BY descricao";
+    break;
+  }
+
+  // Get data from database
+
+  $res = mysqli_query($conn, $sql);
+
   if (mysqli_num_rows($res) > 0) {
     $searchResults = 1;
     $products = mysqli_fetch_all($res, MYSQLI_ASSOC);
@@ -910,21 +938,48 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
     <?php include 'templates/navbar.php'; ?>
     <?php include 'templates/topbar.php'; ?>
     <main>
-      <?php if ($searchResults == 0) { ?>
-        <table class="table table-hover border text-center">
-          <thead>
-            <tr>
-              <th scope="col">Nome</th>
-              <th scope="col">Estoque</th>
-              <th scope="col">Valor</th>
-              <th scope="col">Desconto</th>
-              <th scope="col">Opções</th>
-            </tr>
-          </thead>
-        </table>
-        <p class="text-center h5 mt-4">Não foram encontrados resultados para sua busca ＞﹏＜</p>
-        <a href="produtos.php" class="btn btn-secondary mt-3">Voltar</a>
-        <?php } else { ?>
+      <section class="search">
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>?add-discount" method="POST">
+          <div class="input-group">
+            <input type="text" name="name" id="product-name" class="form-control" placeholder="Pesquisar">
+            <div class="input-group-append">
+              <button type="submit" class="btn btn-outline-info">
+                <svg id="search-input-button" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                  <path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="search-letters">
+            <?php
+            $alfabeto = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+            include 'config/connection.php';
+
+            $letrasExistentes = mysqli_query($conn, "SELECT DISTINCT LEFT(descricao, 1) AS letra FROM produtos ORDER BY letra");
+            $iniciais = mysqli_fetch_all($letrasExistentes, MYSQLI_ASSOC);
+
+            mysqli_close($conn);
+            foreach ($alfabeto as $letra) {
+              $existeLetra = 0;
+              foreach ($iniciais as $inicial) {
+                if ($letra == $inicial['letra']) {
+                  $existeLetra = 1;
+                }
+              }
+              
+              if ($existeLetra == 0) {
+                echo "<button type='button' class='btn btn-link text-secondary'>$letra</button>";
+              } else if ($existeLetra == 1) {
+                echo "<button type='submit' name='letter' value='$letra' class='btn btn-link'>$letra</button>";
+              }
+              
+            }
+            ?>
+          </div>
+        </form>
+      </section>
+      <section class="list">
+        <?php if ($searchResults == 0) { ?>
           <table class="table table-hover border text-center">
             <thead>
               <tr>
@@ -935,22 +990,37 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
                 <th scope="col">Opções</th>
               </tr>
             </thead>
-            <tbody>
-              <?php foreach ($products as $product) { ?>
-                <tr>
-                  <td><?php echo $product['descricao']; ?></td>
-                  <td><?php echo $product['estoque']; ?></td>
-                  <td><?php echo $product['valor']; ?></td>
-                  <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
-                    <input type="hidden" name="id" value="<?php echo $product['idproduto']; ?>">
-                    <td><input type="number" name="discount" class="form-control" value="<?php echo $product['desconto']; ?>" min="1" max="100" placeholder="De 0 a 100" required></td>
-                    <td><button type="submit" name="submit-add-discount" class="btn btn-outline-info">Aplicar</button></td>
-                  </form>
-                </tr>
-              <?php } ?>
-            </tbody>
           </table>
-        <?php } ?>
+          <p class="text-center h5 mt-4">Não foram encontrados resultados para sua busca ＞﹏＜</p>
+          <a href="produtos.php" class="btn btn-secondary mt-3">Voltar</a>
+          <?php } else { ?>
+            <table class="table table-hover border text-center">
+              <thead>
+                <tr>
+                  <th scope="col">Nome</th>
+                  <th scope="col">Estoque</th>
+                  <th scope="col">Valor</th>
+                  <th scope="col">Desconto</th>
+                  <th scope="col">Opções</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($products as $product) { ?>
+                  <tr>
+                    <td><?php echo $product['descricao']; ?></td>
+                    <td><?php echo $product['estoque']; ?></td>
+                    <td><?php echo $product['valor']; ?></td>
+                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                      <input type="hidden" name="id" value="<?php echo $product['idproduto']; ?>">
+                      <td><input type="number" name="discount" class="form-control" value="<?php echo $product['desconto']; ?>" min="1" max="100" placeholder="De 0 a 100" required></td>
+                      <td><button type="submit" name="submit-add-discount" class="btn btn-outline-info">Aplicar</button></td>
+                    </form>
+                  </tr>
+                <?php } ?>
+              </tbody>
+            </table>
+          <?php } ?>
+      </section>           
     </main>
   </body>
 

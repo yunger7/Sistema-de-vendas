@@ -1,3 +1,7 @@
+body {
+  overflow-x: hidden;
+}
+
 main {
   padding-top: 1rem;
 }
@@ -226,7 +230,7 @@ form input[type='number'] {
 }
 
 /* ADD DISCOUNT PAGE */
-#add-discount main {
+#add-discount .list {
   padding: 0;
 
   display: flex;
@@ -235,7 +239,7 @@ form input[type='number'] {
   justify-content: flex-start;
 }
 
-#add-discount input {
+#add-discount .list input {
   max-width: 100px;
   margin: 0 auto;
   text-align: center;
