@@ -88,6 +88,30 @@ if (isset($_POST['submit-add-product'])) {
   mysqli_close($conn);
 }
 
+/* ADD DISCOUNT */
+if (isset($_POST['submit-add-discount'])) {
+  include 'config/connection.php';
+
+  $discount = $_POST['discount'];
+  $productId = $_POST['id'];
+
+  // Check if discount is already applied
+  $res = mysqli_query($conn, "SELECT desconto FROM produtos WHERE idproduto = '$productId'");
+  $checkDisc = mysqli_fetch_assoc($res);
+
+  if ($checkDisc['desconto'] !== $discount) {
+    if (mysqli_query($conn, "UPDATE produtos SET desconto = '$discount' WHERE idproduto = '$productId'")) {
+      $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'produtos.php?add-discount', 'text' => 'Desconto adicionado com sucesso'];
+      header('location: templates/finish-operation.php');
+    } else {
+      $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'produtos.php?add-discount', 'text' => 'Houve um problema ao adicionar o desconto'];
+      header('location: templates/finish-operation.php');
+    }
+  }
+  
+  mysqli_close($conn);
+}
+
 /* EDIT PRODUCT */
 if (isset($_POST['submit-edit-product'])) {
   include 'config/connection.php';
@@ -821,7 +845,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
     <link rel="stylesheet" href="styles/pages/produtos.css">
   </head>
 
-  <body id="add-page">
+  <body id="add-product">
     <?php include 'templates/navbar.php'; ?>
     <?php include 'templates/topbar.php'; ?>
     <main>
@@ -856,7 +880,82 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   </body>
 
   </html>
-<?php } else { /* Index page */ ?> 
+<?php } else if (isset($_GET['add-discount'])) { /* Add discount page */ ?>
+  <?php
+  include 'config/connection.php';
+
+  $res = mysqli_query($conn, "SELECT * FROM produtos ORDER BY descricao");
+  
+  if (mysqli_num_rows($res) > 0) {
+    $searchResults = 1;
+    $products = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+    mysqli_free_result($res);
+  } else {
+    $searchResults = 0;
+  }
+
+  mysqli_close($conn);
+  ?>
+  
+  <!DOCTYPE html>
+  <html lang="pt-br">
+
+  <head>
+    <?php include 'templates/head.php'; ?>
+    <link rel="stylesheet" href="styles/pages/produtos.css">
+  </head>
+
+  <body id="add-discount">
+    <?php include 'templates/navbar.php'; ?>
+    <?php include 'templates/topbar.php'; ?>
+    <main>
+      <?php if ($searchResults == 0) { ?>
+        <table class="table table-hover border text-center">
+          <thead>
+            <tr>
+              <th scope="col">Nome</th>
+              <th scope="col">Estoque</th>
+              <th scope="col">Valor</th>
+              <th scope="col">Desconto</th>
+              <th scope="col">Opções</th>
+            </tr>
+          </thead>
+        </table>
+        <p class="text-center h5 mt-4">Não foram encontrados resultados para sua busca ＞﹏＜</p>
+        <a href="produtos.php" class="btn btn-secondary mt-3">Voltar</a>
+        <?php } else { ?>
+          <table class="table table-hover border text-center">
+            <thead>
+              <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Estoque</th>
+                <th scope="col">Valor</th>
+                <th scope="col">Desconto</th>
+                <th scope="col">Opções</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($products as $product) { ?>
+                <tr>
+                  <td><?php echo $product['descricao']; ?></td>
+                  <td><?php echo $product['estoque']; ?></td>
+                  <td><?php echo $product['valor']; ?></td>
+                  <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                    <input type="hidden" name="id" value="<?php echo $product['idproduto']; ?>">
+                    <td><input type="number" name="discount" class="form-control" value="<?php echo $product['desconto']; ?>" min="1" max="100" placeholder="De 0 a 100" required></td>
+                    <td><button type="submit" name="submit-add-discount" class="btn btn-outline-info">Aplicar</button></td>
+                  </form>
+                </tr>
+              <?php } ?>
+            </tbody>
+          </table>
+        <?php } ?>
+    </main>
+  </body>
+
+  </html>
+<?php } else { /* Index page */ ?>
   <?php
   /* ADD PRODUCTS TO CART */
   if (!isset($_GET['add-to-cart'])) {

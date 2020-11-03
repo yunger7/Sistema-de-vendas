@@ -165,13 +165,13 @@ form input[type='number'] {
 }
 
 /* EDIT PRODUCT PAGE and ADD PRODUCT PAGE*/
-#edit-page main, #add-page main {
+#edit-page main, #add-product main {
   padding: 3rem 5rem 2rem 5rem;
   display: flex;
   justify-content: center;
 }
 
-#edit-page .product, #add-page .product {
+#edit-page .product, #add-product .product {
   height: 100%;
   width: 40%;
 
@@ -180,14 +180,14 @@ form input[type='number'] {
   align-items: center;
 }
 
-#edit-page .product svg, #add-page .product svg {
+#edit-page .product svg, #add-product .product svg {
   width: 4rem;
   height: 4rem;
   position: relative;
   bottom: 25px;
 }
 
-#edit-page form, #add-page form {
+#edit-page form, #add-product form {
   width: 100%;
   padding: 1rem 2rem;
 
@@ -195,20 +195,20 @@ form input[type='number'] {
   flex-direction: column;
 }
 
-#edit-page form label, #add-page form label {
+#edit-page form label, #add-product form label {
   margin: 0;
 }
 
-#edit-page form input, #add-page form input {
+#edit-page form input, #add-product form input {
   margin-bottom: 1rem;
 }
 
-#edit-page form p, #add-page form p {
+#edit-page form p, #add-product form p {
   display: block;
   margin-bottom: 0.5rem;
 }
 
-#edit-page form .option, #add-page form .option {
+#edit-page form .option, #add-product form .option {
   display: inline-block;
   margin-right: 0.5rem;
 }
@@ -223,4 +223,20 @@ form input[type='number'] {
 
 #edit-page form .buttons > * {
   width: 30%;
+}
+
+/* ADD DISCOUNT PAGE */
+#add-discount main {
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+#add-discount input {
+  max-width: 100px;
+  margin: 0 auto;
+  text-align: center;
 }
