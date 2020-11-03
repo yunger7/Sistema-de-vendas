@@ -16,6 +16,10 @@ main {
   margin: 0 auto;
 }
 
+.search .input-group button {
+  width: 3rem;
+}
+
 .search form button svg {
   width: 20px;
   height: 20px;
@@ -230,6 +234,10 @@ form input[type='number'] {
 }
 
 /* ADD DISCOUNT PAGE */
+#add-discount .search {
+  margin-bottom: 1rem;
+}
+
 #add-discount .list {
   padding: 0;
 
