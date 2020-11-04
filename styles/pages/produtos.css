@@ -12,6 +12,7 @@ span.strike {
 
 span.deal {
   font-size: 1.2rem;
+  font-weight: 600;
 }
 
 main {
@@ -49,6 +50,11 @@ main {
 .products {
   text-align: center;
   padding: 1rem;
+}
+
+.products .clear-cart, .products .open-cart {
+  margin-left: 0.5rem;
+  height: 40px;
 }
 
 .products .product {

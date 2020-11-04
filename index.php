@@ -17,6 +17,7 @@ if (isset($_POST['submit-login'])) {
     $_SESSION['user'] = $user['nome'];
     $_SESSION['status'] = "logged";
     $_SESSION['user-id'] = $userId;
+    $_SESSION['cart'] = [];
 
     $vendedor = mysqli_query($conn, "SELECT * FROM vendedores WHERE fk_idpessoa = '$userId'");
     $cliente = mysqli_query($conn, "SELECT * FROM clientes WHERE fk_idpessoa = '$userId'");
