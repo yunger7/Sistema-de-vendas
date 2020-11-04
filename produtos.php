@@ -198,41 +198,38 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
         } else {
           $_SESSION['cart'][$i]['quant'] = $quant;
 
-          if ($_SESSION['cart'][$i]['quant'] == 1) {  
+          // $res = mysqli_query($conn, "SELECT desconto FROM produtos WHERE idproduto = '$idEdit'");
+          // $checkDisc = mysqli_fetch_assoc($res);
+
+          if ($_SESSION['cart'][$i]['quant'] == 1) {
             $_SESSION['cart'][$i]['total'] = $_SESSION['cart'][$i]['value'];
           } else {
-            $_SESSION['cart'][$i]['total'] *= $quant;
+            $_SESSION['cart'][$i]['total'] = $quant * $_SESSION['cart'][$i]['value'];
           }
+
+          // if ($checkDisc['desconto'] == 0) {
+          //   if ($_SESSION['cart'][$i]['quant'] == 1) {
+          //     $_SESSION['cart'][$i]['total'] = $_SESSION['cart'][$i]['value'];
+          //   } else {
+          //     $_SESSION['cart'][$i]['total'] = $quant * $_SESSION['cart'][$i]['value'];
+          //   }
+          // } else {
+          //   $discount = $checkDisc['desconto'];
+          //   $value = $_SESSION['cart'][$i]['value'];
+
+          //   // Calculate discount
+          //   $newValue = $value - ($discount / 100) * $value;
+            
+          //   if ($_SESSION['cart'][$i]['quant'] == 1) {
+          //     $_SESSION['cart'][$i]['total'] = $newValue;
+          //   } else {
+          //     $_SESSION['cart'][$i]['total'] = $quant * $newValue;
+          //   }
+          // }
         }
 
         mysqli_free_result($res);
         mysqli_close($conn);
-      }
-    }
-  }
-
-  /* ADD DISCOUNT TO PRODUCT */
-  if (isset($_GET['disc'])) {
-    $idEdit = $_POST['id'];
-    $discount = $_POST['disc'];
-
-    for ($i = 0; $i < count($_SESSION['cart']); $i++) {
-      if ($_SESSION['cart'][$i]['id'] === $idEdit) {
-        if ($discount !== $_SESSION['cart'][$i]['disc']) {
-          $_SESSION['cart'][$i]['disc'] = $discount;
-
-          if ($_SESSION['cart'][$i]['disc'] === 0) {
-            if ($_SESSION['cart'][$i]['quant'] === 1) {
-              $_SESSION['cart'][$i]['total'] = $_SESSION['cart'][$i]['value'];
-            } else {
-              $_SESSION['cart'][$i]['total'] = $_SESSION['cart'][$i]['value'] * $_SESSION['cart'][$i]['quant'];
-            }
-          } else {
-            $total = $_SESSION['cart'][$i]['total'];
-            $discountPrice = $total - ($discount / 100) * $total;
-            $_SESSION['cart'][$i]['total'] = $discountPrice;
-          }
-        }
       }
     }
   }
@@ -253,7 +250,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   /* GET DATA FROM DATABASE */
   include 'config/connection.php';
 
-  $res = mysqli_query($conn, "SELECT idproduto, descricao, valor FROM produtos");
+  $res = mysqli_query($conn, "SELECT idproduto, descricao, valor, desconto FROM produtos");
   $products = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
   mysqli_free_result($res);
@@ -283,60 +280,47 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
             </tr>
           </thead>
           <tbody>
-            <?php foreach($products as $product){ ?>
-              <?php foreach($_SESSION['cart'] as $cartItem){ ?>
-                <?php if ($cartItem['id'] === $product['idproduto']){ ?>
+            <?php foreach($products as $product) { ?>
+              <?php for ($i = 0; $i < count($_SESSION['cart']); $i++) { ?>
+                <?php if ($_SESSION['cart'][$i]['id'] === $product['idproduto']) { ?>
                   <tr>
-                    <td><a href="produtos.php?cart&remove&id=<?php echo $cartItem['id']; ?>" class="btn btn-danger">X</a></td>
+                    <td><a href="produtos.php?cart&remove&id=<?php echo $product['idproduto']; ?>" class="btn btn-danger">X</a></td>
                     <td><?php echo $product['descricao']; ?></td>
                     <td>
                       <form action="<?php echo $_SERVER['PHP_SELF']; ?>?cart&quant" method="POST">
-                        <input type="hidden" name="id" value="<?php echo $cartItem['id']; ?>">
-                        <input type="number" name="quant" min="1" class="quant form-control" placeholder="1"
+                        <input type="hidden" name="id" value="<?php echo $product['idproduto']; ?>">
+                        <input type="number" name="quant" min="1" class="quant form-control" placeholder="1" onchange="this.form.submit()"
                         <?php
                         if (!empty($_SESSION['cart'])) {
-                          for ($i = 0; $i < count($_SESSION['cart']); $i++) {
-                            if ($_SESSION['cart'][$i]['id'] === $cartItem['id']) {
-                              if ($_SESSION['cart'][$i]['quant'] !== 1) {
-                                $quant = $_SESSION['cart'][$i]['quant'];
-                                echo "value='". $quant ."'";
-                              }
-                            }
+                          if ($_SESSION['cart'][$i]['quant'] !== 1) {
+                            $quant = $_SESSION['cart'][$i]['quant'];
+                            echo "value='". $quant ."'";
                           }
                         }
                         ?>
                         >
                       </form>
                     </td>
-                    <td>
-                      <form action="<?php echo $_SERVER['PHP_SELF']; ?>?cart&disc" method="POST">
-                        <input type="hidden" name="id" value="<?php echo $cartItem['id']; ?>">
-                        <input type="number" name="disc" min="0" max="100" class="disc form-control" placeholder="0%"
-                        <?php
-                        if (!empty($_SESSION['cart'])) {
-                          for ($i = 0; $i < count($_SESSION['cart']); $i++) {
-                            if ($_SESSION['cart'][$i]['id'] === $cartItem['id']) {
-                              if ($_SESSION['cart'][$i]['disc'] !== 0) {
-                                $disc = $_SESSION['cart'][$i]['disc'];
-                                echo "value='". $disc ."'";
-                              }
-                            }
-                          }
-                        }
-                        ?>
-                        >
-                      </form>
-                    </td>
+                    <td><?php echo $product['desconto']; ?>%</td>
                     <td>R$ 
                       <?php
-                      if (!empty($_SESSION['cart'])) {
-                        for ($i = 0; $i < count($_SESSION['cart']); $i++) {
-                          if ($_SESSION['cart'][$i]['id'] === $cartItem['id']) {
-                            $total = $_SESSION['cart'][$i]['total'];
-                            echo number_format((float)$total, 2, '.', '');
-                          }
+                        if (!empty($_SESSION['cart'])) {
+                          $total = $_SESSION['cart'][$i]['total'];
+                          echo number_format((float)$total, 2, '.', '');
                         }
-                      }
+                      ?>
+                      <?php
+                        // if (!empty($_SESSION['cart'])) {
+                        //   if ($product['desconto'] == 0) {
+                        //     $total = $_SESSION['cart'][$i]['total'];
+                        //     echo number_format((float)$total, 2, '.', '');
+                        //   } else {
+                        //     $newPrice = $product['valor'] - ($product['desconto'] / 100) * $product['valor'];
+                        //     $_SESSION['cart'][$i]['total'] = $newPrice;
+                        //     $total = $_SESSION['cart'][$i]['total'];
+                        //     echo number_format((float)$total, 2, '.', '');
+                        //   }
+                        // }
                       ?>
                     </td>
                   </tr>
@@ -508,7 +492,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
               <?php } ?>
               <?php if ($gridCount < 4) { ?>
                 <div class="product col-sm <?php if ($product['estoque'] > 0) { echo "border"; } ?> rounded">
-                  <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
+                  <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                     <p class="h6"><?php echo $product['descricao']; ?></p>
                     <p>R$ <?php echo $product['valor']; ?></p>
                     <?php if ($product['estoque'] > 0) { ?>
@@ -560,7 +544,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
                 <?php $gridCount += 1; ?>
               <?php } else { ?>
                 <div class="product col-sm <?php if ($product['estoque'] > 0) { echo "border"; } ?> rounded">
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
+                  <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                     <p class="h6"><?php echo $product['descricao']; ?></p>
                     <p>R$ <?php echo $product['valor']; ?></p>
                     <?php if ($product['estoque'] > 0) { ?>
@@ -1028,17 +1012,32 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
 <?php } else { /* Index page */ ?>
   <?php
   /* ADD PRODUCTS TO CART */
-  if (!isset($_GET['add-to-cart'])) {
+  if (!isset($_POST['add-to-cart'])) {
     // First load
     $_SESSION['cart'] = [];
   }
 
-  if (isset($_GET['add-to-cart'])) {
-    $id = $_GET['id-produto'];
-    $value = $_GET['value'];
+  if (isset($_POST['add-to-cart'])) {
+    $id = $_POST['id-produto'];
+    $price = $_POST['value'];
+
+    // Check if product has discount
+    include 'config/connection.php';
+
+    $res = mysqli_query($conn, "SELECT desconto FROM produtos WHERE idproduto = '$id'");
+    $checkDisc = mysqli_fetch_assoc($res);
+
+    if ($checkDisc['desconto'] !== 0) {
+      $discount = $checkDisc['desconto'];
+      $value = $price - ($discount / 100) * $price;
+    } else {
+      $value = $price;
+    }
+
+    mysqli_close($conn);
 
     if (empty($_SESSION['cart'])) {
-      $_SESSION['cart'][] = ['id' => $id, 'value' => $value, 'quant' => 1, 'disc' => 0, 'total' => $value];
+      $_SESSION['cart'][] = ['id' => $id, 'value' => $value, 'quant' => 1, 'total' => $value];
     } else {
       // check if product is already in the cart
       $exist = 0;
@@ -1049,7 +1048,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
       }
 
       if ($exist === 0) {
-        $_SESSION['cart'][] = ['id' => $id, 'value' => $value, 'quant' => 1, 'disc' => 0, 'total' => $value];
+        $_SESSION['cart'][] = ['id' => $id, 'value' => $value, 'quant' => 1, 'total' => $value];
       }
     }
   }
@@ -1140,7 +1139,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
             <?php } ?>
             <?php if ($gridCount < 4) { ?>
               <div class="product col-sm <?php if ($product['estoque'] > 0 && $product['status'] == "A") { echo "border"; } ?> rounded">
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
+                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                   <?php if ($_SESSION['priority'] >= 2) { ?>
                   <a href="produtos.php?edit-product&id=<?php echo $product['idproduto']; ?>" class="edit-product">
                     <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="#72B7C1" xmlns="http://www.w3.org/2000/svg">
@@ -1210,7 +1209,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
               <?php $gridCount += 1; ?>
             <?php } else { ?>
               <div class="product col-sm <?php if ($product['estoque'] > 0 && $product['status'] == "A") { echo "border"; } ?> rounded">
-              <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
+              <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                 <?php if ($_SESSION['priority'] >= 2) { ?>
                   <a href="produtos.php?edit-product&id=<?php echo $product['idproduto']; ?>" class="edit-product">
                     <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="#72B7C1" xmlns="http://www.w3.org/2000/svg">
