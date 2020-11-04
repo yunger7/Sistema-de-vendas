@@ -198,34 +198,11 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
         } else {
           $_SESSION['cart'][$i]['quant'] = $quant;
 
-          // $res = mysqli_query($conn, "SELECT desconto FROM produtos WHERE idproduto = '$idEdit'");
-          // $checkDisc = mysqli_fetch_assoc($res);
-
           if ($_SESSION['cart'][$i]['quant'] == 1) {
             $_SESSION['cart'][$i]['total'] = $_SESSION['cart'][$i]['value'];
           } else {
             $_SESSION['cart'][$i]['total'] = $quant * $_SESSION['cart'][$i]['value'];
           }
-
-          // if ($checkDisc['desconto'] == 0) {
-          //   if ($_SESSION['cart'][$i]['quant'] == 1) {
-          //     $_SESSION['cart'][$i]['total'] = $_SESSION['cart'][$i]['value'];
-          //   } else {
-          //     $_SESSION['cart'][$i]['total'] = $quant * $_SESSION['cart'][$i]['value'];
-          //   }
-          // } else {
-          //   $discount = $checkDisc['desconto'];
-          //   $value = $_SESSION['cart'][$i]['value'];
-
-          //   // Calculate discount
-          //   $newValue = $value - ($discount / 100) * $value;
-            
-          //   if ($_SESSION['cart'][$i]['quant'] == 1) {
-          //     $_SESSION['cart'][$i]['total'] = $newValue;
-          //   } else {
-          //     $_SESSION['cart'][$i]['total'] = $quant * $newValue;
-          //   }
-          // }
         }
 
         mysqli_free_result($res);
@@ -416,7 +393,6 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
     $searchResults = 0;
   }
 
-  mysqli_free_result($res);
   mysqli_close($conn);
   ?>
   <!DOCTYPE html>

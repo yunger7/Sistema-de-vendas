@@ -1,0 +1,49 @@
+body {
+  overflow: hidden;
+}
+
+main {
+  padding-top: 1rem;
+}
+
+h1 {
+  text-align: center;
+}
+
+p.old-price {
+  margin-bottom: 0;
+}
+
+span.strike {
+  text-decoration: line-through;
+}
+
+span.deal {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.deals {
+  text-align: center;
+  padding: 1rem;
+}
+
+.deals .product {
+  position: relative;
+  margin: 1rem;
+  padding: 1rem;
+  background-color: var(--light);
+  cursor: default;
+}
+
+.deals .product .in-stock, .deals .product .out-of-stock {
+  margin-top: 1rem;
+}
+
+.deals .product .in-stock {
+  color: var(--green);
+}
+
+.deals .product .out-of-stock {
+  color: var(--red);
+}
