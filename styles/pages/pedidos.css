@@ -1,12 +1,12 @@
-body {
-  overflow: hidden;
-}
-
 main {
   margin-right: 0;
 }
 
 /* SEARCH PAGE */
+#search {
+  overflow: hidden;
+}
+
 #search main {
   padding: 0 0 5% 0;
   margin: 0;
@@ -34,6 +34,10 @@ main {
 }
 
 /* SEARCH RESULT PAGE */
+.search-result {
+  overflow-x: hidden;
+}
+
 .search-result main {
   display: flex;
 }

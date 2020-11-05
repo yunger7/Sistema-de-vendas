@@ -534,16 +534,16 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
           // search by name
         case ($cases[0] !== "" && $cases[1] === ""):
           $nameId = $_GET['name-id'];
-          $sql = "SELECT * FROM pedidos JOIN clientes ON pedidos.fk_idcliente = clientes.idcliente JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa WHERE idpedido = '$nameId' OR nome LIKE '%$nameId%'";
+          $sql = "SELECT * FROM pedidos JOIN clientes ON pedidos.fk_idcliente = clientes.idcliente JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa WHERE idpedido = '$nameId' OR nome LIKE '%$nameId%' ORDER BY data DESC";
           break;
           // search by letter
         case ($cases[0] === "" && $cases[1] !== ""):
           $letter = $_GET['letter'];
-          $sql = "SELECT * FROM pedidos JOIN clientes ON pedidos.fk_idcliente = clientes.idcliente JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa WHERE nome LIKE '$letter%'";
+          $sql = "SELECT * FROM pedidos JOIN clientes ON pedidos.fk_idcliente = clientes.idcliente JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa WHERE nome LIKE '$letter%' ORDER BY data DESC";
           break;
           // empty search  
         case ($cases[0] === "" && $cases[1] === ""):
-          $sql = "SELECT * FROM pedidos JOIN clientes ON pedidos.fk_idcliente = clientes.idcliente JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa";
+          $sql = "SELECT * FROM pedidos JOIN clientes ON pedidos.fk_idcliente = clientes.idcliente JOIN pessoas ON clientes.fk_idpessoa = pessoas.idpessoa ORDER BY data DESC";
           break;
       }
 
