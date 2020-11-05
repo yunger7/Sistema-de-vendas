@@ -16,6 +16,7 @@ if (isset($_GET['show-data'])) { /* Graph page */ ?>
   <body id="graph">
     <?php include 'templates/navbar.php'; ?>
     <?php include 'templates/topbar.php'; ?>
+    <h1>Dados do sistema</h1>
     <main>
       <section class="users">
         <?php
@@ -29,7 +30,6 @@ if (isset($_GET['show-data'])) { /* Graph page */ ?>
         $graphic->SetPlotType('bars');
 
         $graphic->SetTitle("Pessoas cadastradas");
-        $graphic->SetXTitle("Tipo");
         $graphic->SetYTitle("Quantidade");
 
         // Get data from database
@@ -61,7 +61,7 @@ if (isset($_GET['show-data'])) { /* Graph page */ ?>
         /* CREATE GRAPHIC */
         require_once 'phplot/phplot.php';
 
-        $graphic = new PHPlot(200, 570);
+        $graphic = new PHPlot(200, 600);
         $graphic->SetFailureImage(False);
         $graphic->SetPrintImage(False);
 
@@ -94,7 +94,7 @@ if (isset($_GET['show-data'])) { /* Graph page */ ?>
         /* CREATE GRAPHIC */
         require_once 'phplot/phplot.php';
 
-        $graphic = new PHPlot(200, 570);
+        $graphic = new PHPlot(200, 600);
         $graphic->SetFailureImage(False);
         $graphic->SetPrintImage(False);
 
@@ -135,7 +135,6 @@ if (isset($_GET['show-data'])) { /* Graph page */ ?>
 
           $currentYear = date("Y");
           $graphic->SetTitle("Pedidos realizados ($currentYear)");
-          $graphic->SetXTitle("Mes");
           $graphic->SetYTitle("Quantidade");
           $graphic->SetLineWidths(3);
 
