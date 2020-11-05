@@ -1,9 +1,13 @@
 body {
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 main {
   padding-top: 1rem;
+}
+
+h1, h2 {
+  margin: 0;
 }
 
 h1 {
@@ -46,4 +50,15 @@ span.deal {
 
 .deals .product .out-of-stock {
   color: var(--red);
+}
+
+/* Graphics page */
+#graph {
+  overflow: hidden;
+}
+
+#graph main {
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
