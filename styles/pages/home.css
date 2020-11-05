@@ -1,5 +1,5 @@
 body {
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 main {
@@ -53,10 +53,6 @@ span.deal {
 }
 
 /* Graphics page */
-#graph {
-  overflow: hidden;
-}
-
 #graph main {
   height: 100%;
   display: flex;
