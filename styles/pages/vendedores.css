@@ -3,6 +3,7 @@ body {
 }
 
 main {
+  height: 100%;
   margin-right: 0 !important;
   padding: 3rem 5rem 2rem 5rem;
   display: flex;

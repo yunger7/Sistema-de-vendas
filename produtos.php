@@ -56,6 +56,7 @@ if (isset($_POST['submit-order'])) {
     }
 
     if ($success === 1) {
+      $_SESSION['cart'] = [];
       $_SESSION['finish-operation'] = ['type' => 'success', 'url' => 'produtos.php', 'text' => 'Pedido finalizado com sucesso!'];
       header('location: templates/finish-operation.php');
     }

@@ -42,13 +42,14 @@
 }
 
 #topbar svg#cart-logo {
-  margin-right: 1rem;
+  margin-right: 0.2rem;
   width: 32px !important;
   height: 32px !important;
 }
 
 #topbar #cart {
   color: var(--info);
+  margin-right: 0.8rem;
 }
 
 #topbar .input-group-prepend {

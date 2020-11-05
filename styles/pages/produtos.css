@@ -58,6 +58,7 @@ main {
 }
 
 .products .product {
+  max-width: 235px;
   position: relative;
   margin: 1rem;
   padding: 1rem;
