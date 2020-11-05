@@ -136,6 +136,12 @@ if (isset($_POST['submit-edit-product'])) {
 
 /* DELETE PRODUCT */
 if (isset($_GET['delete-product'])) {
+  // Security
+  if ($_SESSION['priority'] !== 2) {
+    header('location: produtos.php');
+    die();
+  }
+
   include 'config/connection.php';
 
   $idDelete = $_GET['id'];
@@ -581,6 +587,12 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
 
   </html>
 <?php } else if (isset($_GET['final']) || isset($_GET['final-name']) || isset($_GET['final-letter'])) { /* Finalize order page */ ?>
+  <?php
+  // Security
+  if ($_SESSION['priority'] == 0) {
+    header('location: produtos.php');
+  }  
+  ?>
   <?php if (isset($_GET['final-name']) || isset($_GET['final-letter'])) {  /* Choose client (list) */ ?>
     <?php
     include 'config/connection.php';
@@ -743,6 +755,11 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   <?php } ?>
 <?php } else if (isset($_GET['edit-product'])) { /* Edit product page */ ?>
   <?php
+  // Security
+  if ($_SESSION['priority'] < 2) {
+    header('location: produtos.php');
+  }
+
   $idEdit = $_GET['id'];
 
   include 'config/connection.php';
@@ -800,6 +817,12 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
 
   </html>
 <?php } else if (isset($_GET['add-product'])) { /* Add product page */ ?>
+  <?php
+  // Security
+  if ($_SESSION['priority'] < 2) {
+    header('location: produtos.php');
+  }  
+  ?>
   <!DOCTYPE html>
   <html lang="pt-br">
 
@@ -845,6 +868,11 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   </html>
 <?php } else if (isset($_GET['add-discount'])) { /* Add discount page */ ?>
   <?php
+  // Security
+  if ($_SESSION['priority'] < 2) {
+    header('location: produtos.php');
+  }
+
   /* DATABASE SEARCH */
   include 'config/connection.php';
 
@@ -988,7 +1016,6 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   </html>
 <?php } else { /* Index page */ ?>
   <?php
-
   /* ADD PRODUCTS TO CART */
   if (isset($_POST['add-to-cart'])) {
     $id = $_POST['id-produto'];

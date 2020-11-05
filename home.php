@@ -7,6 +7,12 @@ if ($_SESSION['status'] !== "logged") {
 
 /* SEND PAGES */
 if (isset($_GET['show-data'])) { /* Graph page */ ?>
+  <?php
+  // Security
+  if ($_SESSION['priority'] == 0) {
+    header('location: home.php');
+  }
+  ?>
   <!DOCTYPE html>
   <html lang="pt-br">
   <head>

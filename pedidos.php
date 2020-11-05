@@ -7,6 +7,11 @@ if ($_SESSION['status'] !== "logged") {
 
 /* DELETE ORDER */
 if (isset($_GET['delete-order'])) {
+  // Security
+  if ($_SESSION['priority'] == 0) {
+    header('location: pedidos.php');
+  }
+
   include 'config/connection.php';
 
   $id = $_GET['id'];
@@ -203,6 +208,11 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
   </html>
 <?php } else if (isset($_GET['edit-order'])) { /* Edit order page */ ?>
   <?php
+  // Security
+  if ($_SESSION['priority'] == 0) {
+    header('location: pedidos.php');
+  }
+
   $id = $_GET['id'];
   $error = 0;
 
@@ -526,6 +536,11 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
     /* SEND PAGES */
     if (isset($_GET['name-id']) || isset($_GET['letter'])) { /* Search result page */ ?>
       <?php
+      // Security
+      if ($_SESSION['priority'] == 0) {
+        header('location: pedidos.php');
+      }
+
       include 'config/connection.php';
 
       $cases = [$_GET['name-id'] ?? "", $_GET['letter'] ?? ""];
@@ -653,6 +668,12 @@ if (isset($_GET['view-order'])) { /* View order page */ ?>
 
       </html>
     <?php } else { /* Index page */ ?>
+      <?php
+      // Security
+      if ($_SESSION['priority'] == 0) {
+        header('location: pedidos.php');
+      }  
+      ?>
       <!DOCTYPE html>
       <html lang="pt-br">
 

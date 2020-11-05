@@ -52,6 +52,11 @@ main {
   padding: 1rem;
 }
 
+.products .row {
+  display: flex;
+  justify-content: space-around;
+}
+
 .products .clear-cart, .products .open-cart {
   margin-left: 0.5rem;
   height: 40px;
