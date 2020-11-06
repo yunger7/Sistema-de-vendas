@@ -21,7 +21,7 @@ Para acessar o sistema, o usuário deve ser préviamente cadastrado. Por regra, 
 Como mencionado, existem 4 tipo de cadastro que são realizados: clientes, vendedores, produtos e pedidos. O sistema permite cadastrar, ler, editar e deletar qualquer tipo de registro.
 
 ![Cadastrar Cliente](https://i.imgur.com/Y7jGjNH.jpg)
-![Cadastra Produto](https://i.imgur.com/F2HXKMd.gifv)
+![Cadastrar Produto](https://i.imgur.com/F2HXKMd.gif)
 
 ## Tipos de usuários :man:
 Dependendo do tipo de usuário, o sistema disponibiliza diferentes seções. Além disso, cada tipo possui diferentes permissões.
