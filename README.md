@@ -44,6 +44,7 @@ Usando a biblioteca PHPlot, o sistema gera gráficos automáticamente com os dad
 
 * HTML5
 * CSS3
+* Bootstrap
 * PHP
 * PHPlot
 * MySQL (MariaDB)
