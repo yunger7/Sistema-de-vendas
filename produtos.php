@@ -1058,16 +1058,39 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
     $_SESSION['cart'] = [];
   }
 
-  /* GET PRODUCTS IN DATABASE */
-  include 'config/connection.php';
+  /* CONTROL NEXT OR PREVIOUS PAGE */
+  // Next page
+  if (isset($_GET['next-page'])) {
+    $page = $_GET['page'];
+    $page += 1;
+    $string = 'Refresh: 0; url=produtos.php?page=' . $page;
+    header($string);
+  }
 
+  // Previous page
+  if (isset($_GET['previous-page'])) {
+    $page = $_GET['page'];
+    $page -= 1;
+    $string = 'Refresh: 0; url=produtos.php?page=' . $page;
+    header($string);
+  }
+
+  /* CHECK PAGE AND CREATE PAGINATION */
+  $page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+  include 'config/connection.php';
   $res = mysqli_query($conn, "SELECT * FROM produtos");
+
+  $totalRegisters = mysqli_num_rows($res);
+  $registerPerPage = 10;
+  $numberOfPages = ceil($totalRegisters / $registerPerPage);
+  $start = ($registerPerPage * $page) - $registerPerPage;
+
+  $res = mysqli_query($conn, "SELECT * FROM produtos LIMIT $start,$registerPerPage");
   $products = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
   mysqli_free_result($res);
   mysqli_close($conn);
-
-
   ?>
   <!DOCTYPE html>
   <html lang="pt-br">
@@ -1284,6 +1307,39 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
             </div>
             <?php $gridCount = 0; ?>
           <?php } ?>
+        <?php } ?>
+      </section>
+      <section class="pages">
+        <?php if ($page == 1) { ?>
+          <a class="previous-page" style="text-decoration: none;">
+            <svg width="1em" height="1em" style="color: grey;" viewBox="0 0 16 16" class="bi bi-caret-left-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3.86 8.753l5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+            </svg>
+          </a>
+        <?php } else { ?>
+          <a href="produtos.php?page=<?php echo $page; ?>&previous-page" class="previous-page" style="text-decoration: none;">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-left-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3.86 8.753l5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+            </svg>
+          </a>
+        <?php } ?>
+        
+        <?php for ($i = 1; $i <= $numberOfPages; $i++) { ?>
+          <a href="produtos.php?page=<?php echo $i; ?>" class="page-number"><?php echo $i; ?></a>
+        <?php } ?>
+
+        <?php if ($page == $numberOfPages) { ?>
+          <a class="next-page" style="text-decoration: none;">
+            <svg width="1em" height="1em" style="color: grey;" viewBox="0 0 16 16" class="bi bi-caret-right-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+            </svg>
+          </a>
+        <?php } else { ?>
+          <a href="produtos.php?page=<?php echo $page; ?>&next-page" class="next-page" style="text-decoration: none;">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-right-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+            </svg>
+          </a>
         <?php } ?>
       </section>
     </main>
