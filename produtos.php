@@ -1051,6 +1051,10 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
         $_SESSION['cart'][] = ['id' => $id, 'value' => $value, 'quant' => 1, 'total' => $value];
       }
     }
+
+    $page = $_POST['page'];
+    $string = 'Location: produtos.php?page=' . $page;
+    header($string);
   }
 
   /* CLEAR CART */
@@ -1063,7 +1067,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   if (isset($_GET['next-page'])) {
     $page = $_GET['page'];
     $page += 1;
-    $string = 'Refresh: 0; url=produtos.php?page=' . $page;
+    $string = 'Location: produtos.php?page=' . $page;
     header($string);
   }
 
@@ -1071,7 +1075,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   if (isset($_GET['previous-page'])) {
     $page = $_GET['page'];
     $page -= 1;
-    $string = 'Refresh: 0; url=produtos.php?page=' . $page;
+    $string = 'Location: produtos.php?page=' . $page;
     header($string);
   }
 
@@ -1100,7 +1104,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
     <link rel="stylesheet" href="styles/pages/produtos.css">
   </head>
 
-  <body>
+  <body id="index">
     <?php include 'templates/navbar.php'; ?>
     <?php include 'templates/topbar.php'; ?>
     <main>
@@ -1174,48 +1178,34 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
         foreach ($products as $product) { ?>
           <?php if ($gridCount == 0) { ?>
             <div class="row">
-            <?php } ?>
-            <?php if ($gridCount < 4) { ?>
-              <div class="product col-sm <?php if ($product['estoque'] > 0 && $product['status'] == "A") { echo "border"; } ?> rounded">
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
-                  <?php if ($_SESSION['priority'] >= 2) { ?>
-                  <a href="produtos.php?edit-product&id=<?php echo $product['idproduto']; ?>" class="edit-product">
-                    <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="#72B7C1" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                      <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                    </svg>
-                  </a>
-                  <?php } ?>
-                  <p class="h6"><?php echo $product['descricao']; ?></p>
-                  <?php if ($product['desconto'] == 0) { ?>
-                    <p>R$ <?php echo $product['valor']; ?></p>
-                  <?php } else { ?>
-                    <p class="old-price"><span class="strike">R$ <?php echo $product['valor']; ?></span></p>
-                    <?php
-                    // Calculate discounted price
-                    $newPrice = $product['valor'] - ($product['desconto'] / 100) * $product['valor'];
-                    ?>
-                    <p><span class="deal">R$ <?php echo number_format((float)$newPrice, 2, '.', ''); ?></span></p>
-                  <?php } ?>
-                  
-                  <?php if ($product['estoque'] > 0 && $product['status'] == "A") { ?>
-                    <button type="submit" name="add-to-cart" class="btn btn-info" 
-                      <?php
-                      if (!empty($_SESSION['cart'])) {
-                        $empty = 0;
-                        foreach ($_SESSION['cart'] as $cartItem) {
-                          if ($cartItem['id'] === $product['idproduto']) {
-                            $empty = 1;
-                          }
-                        }
-
-                        if ($empty === 1) {
-                          echo "disabled";
-                        }
-                      }
-
-                      ?>
-                    >
+          <?php } ?>
+          <?php if ($gridCount < 4) { ?>
+            <div class="product col-sm <?php if ($product['estoque'] > 0 && $product['status'] == "A") { echo "border"; } ?> rounded">
+              <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                <?php $page = isset($_GET['page']) ? $_GET['page'] : 1; ?>
+                <input type="hidden" name="page" value="<?php echo $page; ?>">
+                <?php if ($_SESSION['priority'] >= 2) { ?>
+                <a href="produtos.php?edit-product&id=<?php echo $product['idproduto']; ?>" class="edit-product">
+                  <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="#72B7C1" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                  </svg>
+                </a>
+                <?php } ?>
+                <p class="h6"><?php echo $product['descricao']; ?></p>
+                <?php if ($product['desconto'] == 0) { ?>
+                  <p>R$ <?php echo $product['valor']; ?></p>
+                <?php } else { ?>
+                  <p class="old-price"><span class="strike">R$ <?php echo $product['valor']; ?></span></p>
+                  <?php
+                  // Calculate discounted price
+                  $newPrice = $product['valor'] - ($product['desconto'] / 100) * $product['valor'];
+                  ?>
+                  <p><span class="deal">R$ <?php echo number_format((float)$newPrice, 2, '.', ''); ?></span></p>
+                <?php } ?>
+                
+                <?php if ($product['estoque'] > 0 && $product['status'] == "A") { ?>
+                  <button type="submit" name="add-to-cart" class="btn btn-info" 
                     <?php
                     if (!empty($_SESSION['cart'])) {
                       $empty = 0;
@@ -1226,28 +1216,46 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
                       }
 
                       if ($empty === 1) {
-                        echo "Adicionado";
-                      } else {
-                        echo "Adicionar";
+                        echo "disabled";
                       }
+                    }
+
+                    ?>
+                  >
+                  <?php
+                  if (!empty($_SESSION['cart'])) {
+                    $empty = 0;
+                    foreach ($_SESSION['cart'] as $cartItem) {
+                      if ($cartItem['id'] === $product['idproduto']) {
+                        $empty = 1;
+                      }
+                    }
+
+                    if ($empty === 1) {
+                      echo "Adicionado";
                     } else {
                       echo "Adicionar";
                     }
-                    ?>
-                    </button>
-                    <input type="hidden" name="id-produto" value="<?php echo $product['idproduto']; ?>">
-                    <input type="hidden" name="value" value="<?php echo $product['valor']; ?>">
-                    <p class="in-stock">Disponível <?php echo $product['estoque'] ?>
-                    </p>
-                  <?php } else { ?>
-                    <p class="out-of-stock">Indisponível</p>
-                  <?php } ?>
-                </form>
-              </div>
-              <?php $gridCount += 1; ?>
-            <?php } else { ?>
+                  } else {
+                    echo "Adicionar";
+                  }
+                  ?>
+                  </button>
+                  <input type="hidden" name="id-produto" value="<?php echo $product['idproduto']; ?>">
+                  <input type="hidden" name="value" value="<?php echo $product['valor']; ?>">
+                  <p class="in-stock">Disponível <?php echo $product['estoque'] ?>
+                  </p>
+                <?php } else { ?>
+                  <p class="out-of-stock">Indisponível</p>
+                <?php } ?>
+              </form>
+            </div>
+            <?php $gridCount += 1; ?>
+          <?php } else { ?>
               <div class="product col-sm <?php if ($product['estoque'] > 0 && $product['status'] == "A") { echo "border"; } ?> rounded">
               <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                <?php $page = isset($_GET['page']) ? $_GET['page'] : 1; ?>
+                <input type="hidden" name="page" value="<?php echo $page; ?>">
                 <?php if ($_SESSION['priority'] >= 2) { ?>
                   <a href="produtos.php?edit-product&id=<?php echo $product['idproduto']; ?>" class="edit-product">
                     <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="#72B7C1" xmlns="http://www.w3.org/2000/svg">

@@ -1,3 +1,7 @@
+#index {
+  overflow: hidden;
+}
+
 body {
   overflow-x: hidden;
 }
@@ -91,13 +95,16 @@ main {
 }
 
 .pages {
+  max-width: 1000px;
+  margin: 0 auto;
   height: 2em;
-  position: fixed;
-  bottom: 25px;
-  left: 50%;
 
   text-align: center;
   font-size: 1.4rem;
+}
+
+.pages a {
+  margin: 0 0.3rem;
 }
 
 /* CART PAGE */
