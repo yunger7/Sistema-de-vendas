@@ -13,7 +13,7 @@ Este sistema foi projetado para registrar, organizar, e facilitar a visualizaç�
 
 # ⚙️ Funcionamento da Aplicação
 ## Login :door:
-Para acessar o sistema, o usuário deve ser préviamente cadastrado. Por regra, os clientes precisam solicitar acesso para um vendedor ou administrador, que cadastra seus dados. Em seguida, o cliente deve cadastrar sua senha de acesso ao sistema.
+Para acessar o sistema, o usuário deve ser previamente cadastrado. Por regra, os clientes precisam solicitar acesso para um vendedor ou administrador, que cadastra seus dados. Em seguida, o cliente deve cadastrar sua senha de acesso ao sistema.
 
 ![Login](https://i.imgur.com/4s3YTrk.gif)
 
