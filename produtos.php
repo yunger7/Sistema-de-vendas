@@ -353,19 +353,6 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
                           echo number_format((float)$total, 2, '.', '');
                         }
                       ?>
-                      <?php
-                        // if (!empty($_SESSION['cart'])) {
-                        //   if ($product['desconto'] == 0) {
-                        //     $total = $_SESSION['cart'][$i]['total'];
-                        //     echo number_format((float)$total, 2, '.', '');
-                        //   } else {
-                        //     $newPrice = $product['valor'] - ($product['desconto'] / 100) * $product['valor'];
-                        //     $_SESSION['cart'][$i]['total'] = $newPrice;
-                        //     $total = $_SESSION['cart'][$i]['total'];
-                        //     echo number_format((float)$total, 2, '.', '');
-                        //   }
-                        // }
-                      ?>
                     </td>
                   </tr>
                 <?php } ?>
@@ -444,7 +431,7 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
     break;
     // empty search
     case ($cases[0] === "" && $cases[1] === ""):
-      $sql = "SELECT * FROM produtos";
+      header('Location: produtos.php');
     break;
   }
 
