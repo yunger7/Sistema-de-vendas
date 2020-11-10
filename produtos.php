@@ -48,7 +48,15 @@ if (isset($_POST['submit-order'])) {
       $sql2 = "INSERT INTO itens_pedidos(fk_idpedido, fk_idproduto, qtd, valor) VALUES ('$orderId', '$productId', '$quant', '$value')";
 
       if (mysqli_query($conn, $sql2)) {
-        $success = 1;
+        $res = mysqli_query($conn, "SELECT estoque FROM produtos WHERE idproduto = '$productId'");
+        $productStock = mysqli_fetch_assoc($res);
+
+        $newStock = $productStock['estoque'] - $quant;
+
+        if (mysqli_query($conn, "UPDATE produtos SET estoque = '$newStock' WHERE idproduto = '$productId'")) {
+          $success = 1;
+        }
+
       } else {
         $_SESSION['finish-operation'] = ['type' => 'error', 'url' => 'produtos.php', 'text' => 'Houve um problema ao finalizar o pedido'];
         header('location: templates/finish-operation.php');
@@ -1080,7 +1088,15 @@ if (isset($_GET['cart'])) { /* Cart page */ ?>
   }
 
   /* CHECK PAGE AND CREATE PAGINATION */
-  $page = isset($_GET['page']) ? $_GET['page'] : 1;
+  if (isset($_GET['page'])) {
+    if ($_GET['page'] == "") {
+      $page = 1;
+    } else {
+      $page = $_GET['page'];
+    }
+  } else {
+    $page = 1;
+  }
 
   include 'config/connection.php';
   $res = mysqli_query($conn, "SELECT * FROM produtos");
