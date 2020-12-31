@@ -13,7 +13,7 @@ Este sistema foi projetado para registrar, organizar, e facilitar a visualizaç�
 
 # ⚙️ Funcionamento da Aplicação
 ## Login :door:
-Para acessar o sistema, o usuário deve ser préviamente cadastrado. Por regra, os clientes precisam solicitar acesso para um vendedor ou administrador, que cadastra seus dados. Em seguida, o cliente deve cadastrar sua senha de acesso ao sistema.
+Para acessar o sistema, o usuário deve ser préviamente cadastrado. Por regra, os clientes precisam solicitar acesso para um vendedor ou administrador, que cadastra seus dados. Em seguida, o cliente deve cadastrar sua senha de acesso no sistema.
 
 ![Login](https://i.imgur.com/4s3YTrk.gif)
 
@@ -47,7 +47,6 @@ Usando a biblioteca PHPlot, o sistema gera gráficos automáticamente com os dad
 * Bootstrap
 * PHP
 * PHPlot
-* MySQL (MariaDB)
-
+* MySQL
 # :checkered_flag: Considerações finais
 O projeto apesar de ainda não estar finalizado já entrega grande parte dos requisitos iniciais. Sugestões, issues e pull requests são bem-vindos!
