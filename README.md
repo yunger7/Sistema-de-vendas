@@ -48,5 +48,6 @@ Usando a biblioteca PHPlot, o sistema gera gráficos automáticamente com os dad
 * PHP
 * PHPlot
 * MySQL
+
 # :checkered_flag: Considerações finais
-O projeto apesar de ainda não estar finalizado já entrega grande parte dos requisitos iniciais. Sugestões, issues e pull requests são bem-vindos!
+Esse foi um dos meus primeiros sistemas. Portanto, existem muitos aspectos para incrementar no sistema, como responsividade, separation of concerns, client-side routing e diversos outros.
