@@ -50,4 +50,4 @@ Usando a biblioteca PHPlot, o sistema gera gráficos automáticamente com os dad
 * MySQL
 
 # :checkered_flag: Considerações finais
-Já se passou um bom tempo desde a criação desse sistema, sendo assim, existem diversas falhas e implementações que atualmente eu faria de forma diferente. No entando, devido a diversos fatores, esse sistema não será atualizado.
+Já se passou um bom tempo desde a criação desse sistema, sendo assim, existem diversas falhas a serem corrigidas e implementações que atualmente eu faria de forma diferente. No entando, devido a diversos fatores, esse sistema não será atualizado.
